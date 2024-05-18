@@ -1,0 +1,10 @@
+app/static/js/uikit-icons.js linguist-vendored
+app/static/js/uikit-icons.min.js linguist-vendored
+app/static/js/uikit.js linguist-vendored
+app/static/js/uikit.min.js linguist-vendored
+app/static/css/uikit.css linguist-vendored
+app/static/css/uikit.min.css linguist-vendored
+app/static/css/uikit-rtl.css linguist-vendored
+app/static/css/uikit-rtl.min.css linguist-vendored
+Api.elm linguist-generated=true
+jquery.js linguist-vendored=false

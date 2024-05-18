@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Login
+{% endblock title %}
+
+{% block content %}
+<main class="row" style="height: 100%;">
+    <!-- Banner -->
+    <div class="col-md-7" style="background-image: url({{ url_for('static', filename='imgs/banner_login.svg')}}); min-height: 98vh; padding: 0px !important;">
+        
+    </div>
+    <!-- Area de login -->
+    <div class="col-md-5" style="background-color: #009473; padding: 0px !important;">
+        <div class="container rounded shadow bg-white" style="margin-top: 9rem; margin-left: 13rem; min-height: 550px; width: 400px;">
+            <img class="mx-auto d-block" src="{{ url_for('static', filename='imgs/logo_bibliotec.svg')}}" alt="" width="200">
+            <hr style="color: #009473;">
+            
+            <div class="container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="font-size: 10pt !important;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <form action="{{url_for('login')}}" method="post" class="form-group">
+                    <div class="form-floating mb-3">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="E-mail">
+                        <label for="email">Email</label> 
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="senha" id="senha" class="form-control" placeholder="sua senha">
+                        <label for="senha">Senha</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" checked class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Lembre-se de min</label>
+                      </div>
+                    <div class="mb-3">
+                        <button class="btn btn-primary" type="submit">Acessar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+    
+{% endblock %}

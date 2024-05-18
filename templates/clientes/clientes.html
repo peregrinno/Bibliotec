@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Clientes
+{% endblock title %}
+
+{% block content %}
+{% include 'menu.html' %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container">
+    <div class="row mb-3">
+        <h3 class="fw-bold">Clientes</h3>
+    </div>
+    {% include 'actions/messages.html' %}
+    <div class="d-flex mb-3">
+        <div class="p-2 flex-grow-1">
+            <form class="d-flex w-50" role="search" method="get" action="{{ url_for('clientes') }}">
+                <input class="form-control me-2" type="search" name="search" placeholder="Procurar por e-mail ou telefone..." aria-label="Search" value="{{ context.search_query }}">
+                <button class="btn btn-primary" type="submit">Procurar</button>
+            </form>
+        </div>
+        <div class="p-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoCliente">
+                <i class="bi bi-plus-circle-fill"></i>&nbsp;
+                Novo cliente
+            </button>
+        </div>
+        <!-- 
+        <div class="p-2">
+            <button class="btn btn-primary">
+                Exportar
+            </button>
+        </div>
+        -->
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="text-center" scope="col">E-mail</th>
+                    <th class="text-center" scope="col">Endereço</th>
+                    <th class="text-center" scope="col">Telefone</th>
+                    <th class="text-center" scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if context.clientes %}
+                {% for cliente in context.clientes %}
+                <tr>
+                    <th scope="row">{{ cliente.id }}</th>
+                    <td class="text-center">{{ cliente.email }}</td>
+                    <td class="text-center">{{ cliente.endereco }}</td>
+                    <td class="text-center">{{ cliente.telefone }}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
+                            data-bs-target="#ModalNovoCliente" data-id="{{ cliente.id }}"
+                            data-email="{{ cliente.email }}" data-endereco="{{ cliente.endereco }}"
+                            data-telefone="{{ cliente.telefone }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
+                            data-bs-target="#ModalDeleteCliente" data-id="{{ cliente.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">Sem clientes cadastrados ainda...</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'clientes/formsCliente/forms.html' %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalNovoCliente = document.getElementById('ModalNovoCliente');
+        modalNovoCliente.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var clienteId = button.getAttribute('data-id');
+            var email = button.getAttribute('data-email');
+            var endereco = button.getAttribute('data-endereco');
+            var telefone = button.getAttribute('data-telefone');
+
+            var modalTitle = modalNovoCliente.querySelector('.modal-title');
+            var form = modalNovoCliente.querySelector('form');
+            var inputId = form.querySelector('#cliente_id');
+            var inputEmail = form.querySelector('#email');
+            var inputEndereco = form.querySelector('#endereco');
+            var inputTelefone = form.querySelector('#telefone');
+
+            if (clienteId) {
+                modalTitle.textContent = 'Editar Cliente';
+                form.action = '{{ url_for("clientes") }}';
+                inputId.value = clienteId;
+                inputEmail.value = email;
+                inputEndereco.value = endereco;
+                inputTelefone.value = telefone;
+            } else {
+                modalTitle.textContent = 'Adicionar Cliente';
+                form.action = '{{ url_for("clientes") }}';
+                inputId.value = '';
+                inputEmail.value = '';
+                inputEndereco.value = '';
+                inputTelefone.value = '';
+            }
+        });
+
+        var modalDeleteCliente = document.getElementById('ModalDeleteCliente');
+        modalDeleteCliente.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var clienteId = button.getAttribute('data-id');
+
+            var formDelete = modalDeleteCliente.querySelector('form');
+            var inputId = formDelete.querySelector('#delete_cliente_id');
+            inputId.value = clienteId;
+        });
+    });
+</script>
+{% endblock script %}
+{% endblock content %}
