@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Livros
+{% endblock title %}
+
+{% block content %}
+{% include 'menu.html' %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container">
+    <div class="row mb-3">
+        <h3 class="fw-bold">Livros</h3>
+    </div>
+    {% include 'actions/messages.html' %}
+    <div class="d-flex mb-3">
+        <div class="p-2 flex-grow-1">
+            <form class="d-flex w-50" role="search" method="get" action="{{ url_for('livros') }}">
+                <input class="form-control me-2" type="search" name="search" placeholder="Procurar por título, autor ou ISBN..." aria-label="Search" value="{{ context.search_query }}">
+                <button class="btn btn-primary" type="submit">Procurar</button>
+            </form>
+        </div>
+        <div class="p-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoLivro">
+                <i class="bi bi-plus-circle-fill"></i>&nbsp;
+                Novo livro
+            </button>
+        </div>
+        <div class="p-2">
+            <button class="btn btn-primary">
+                Exportar
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="text-center" scope="col">ISBN</th>
+                    <th class="text-center" scope="col">Título</th>
+                    <th class="text-center" scope="col">Autor</th>
+                    <th class="text-center" scope="col">Gênero</th>
+                    <th class="text-center" scope="col">Qtd Disponível</th>
+                    <th class="text-center" scope="col">Qtd Total</th>
+                    <th class="text-center" scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if context.livros %}
+                {% for livro in context.livros %}
+                <tr>
+                    <th scope="row">{{ livro.id }}</th>
+                    <td class="text-center">{{ livro.isbn }}</td>
+                    <td class="text-center">{{ livro.titulo }}</td>
+                    <td class="text-center">{{ livro.autor }}</td>
+                    <td class="text-center">{{ livro.genero.nome }}</td>
+                    <td class="text-center">{{ livro.qtd_disponivel }}</td>
+                    <td class="text-center">{{ livro.qtd_total }}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
+                            data-bs-target="#ModalNovoLivro" data-id="{{ livro.id }}"
+                            data-isbn="{{ livro.isbn }}" data-titulo="{{ livro.titulo }}"
+                            data-autor="{{ livro.autor }}" data-genero_id="{{ livro.genero_id }}"
+                            data-qtd_disponivel="{{ livro.qtd_disponivel }}" data-qtd_total="{{ livro.qtd_total }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
+                            data-bs-target="#ModalDeleteLivro" data-id="{{ livro.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Sem livros cadastrados ainda...</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'livros/formsLivro/forms.html' %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalNovoLivro = document.getElementById('ModalNovoLivro');
+        modalNovoLivro.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var livroId = button.getAttribute('data-id');
+            var isbn = button.getAttribute('data-isbn');
+            var titulo = button.getAttribute('data-titulo');
+            var autor = button.getAttribute('data-autor');
+            var generoId = button.getAttribute('data-genero_id');
+            var qtdDisponivel = button.getAttribute('data-qtd_disponivel');
+            var qtdTotal = button.getAttribute('data-qtd_total');
+
+            var modalTitle = modalNovoLivro.querySelector('.modal-title');
+            var form = modalNovoLivro.querySelector('form');
+            var inputId = form.querySelector('#livro_id');
+            var inputIsbn = form.querySelector('#isbn');
+            var inputTitulo = form.querySelector('#titulo');
+            var inputAutor = form.querySelector('#autor');
+            var inputGeneroId = form.querySelector('#genero_id');
+            var inputQtdDisponivel = form.querySelector('#qtd_disponivel');
+            var inputQtdTotal = form.querySelector('#qtd_total');
+
+            if (livroId) {
+                modalTitle.textContent = 'Editar Livro';
+                form.action = '{{ url_for("livros") }}';
+                inputId.value = livroId;
+                inputIsbn.value = isbn;
+                inputTitulo.value = titulo;
+                inputAutor.value = autor;
+                inputGeneroId.value = generoId;
+                inputQtdDisponivel.value = qtdDisponivel;
+                inputQtdTotal.value = qtdTotal;
+            } else {
+                modalTitle.textContent = 'Adicionar Livro';
+                form.action = '{{ url_for("livros") }}';
+                inputId.value = '';
+                inputIsbn.value = '';
+                inputTitulo.value = '';
+                inputAutor.value = '';
+                inputGeneroId.value = '';
+                inputQtdDisponivel.value = '';
+                inputQtdTotal.value = '';
+            }
+        });
+
+        // Add event listener for the "Adicionar Gênero" button
+        var modalAdicionarGenero = document.getElementById('ModalAdicionarGenero');
+        modalAdicionarGenero.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var inputNome = modalAdicionarGenero.querySelector('#nome_genero');
+            inputNome.value = '';
+        });
+    });
+</script>
+{% endblock script %}
+{% endblock content %}

@@ -1,0 +1,61 @@
+
+<!-- Modal Novo Empréstimo -->
+<div class="modal fade" id="ModalNovoEmprestimo" tabindex="-1" aria-labelledby="ModalNovoEmprestimoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalNovoEmprestimoLabel">Novo Empréstimo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('emprestimos') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_livro" class="form-label">Livro</label>
+                        <select class="form-select" id="id_livro" name="id_livro" required>
+                            <option value="">Selecione um livro</option>
+                            {% for livro in context.livros %}
+                            <option value="{{ livro.id }}">{{ livro.titulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_cliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="id_cliente" name="id_cliente" required>
+                            <option value="">Selecione um cliente</option>
+                            {% for cliente in context.clientes %}
+                            <option value="{{ cliente.id }}">{{ cliente.email }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Devolução Empréstimo -->
+<div class="modal fade" id="ModalDevolucaoEmprestimo" tabindex="-1" aria-labelledby="ModalDevolucaoEmprestimoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalDevolucaoEmprestimoLabel">Devolução de Empréstimo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('devolucao') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="id_emprestimo" id="id_emprestimo">
+                    <p>Você tem certeza que deseja registrar a devolução deste empréstimo?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Devolver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

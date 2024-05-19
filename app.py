@@ -2,14 +2,17 @@ from flask import Flask, jsonify, render_template, make_response, redirect, url_
 from flask_migrate import Migrate, upgrade
 from flask_cors import CORS
 from flask_paginate import Pagination
+from sqlalchemy import desc
 from config import Config
 from models import db
 from functools import wraps
-from sqlalchemy import desc, func
 from datetime import date
-from dotenv import load_dotenv
 import subprocess
 import os
+import pytz
+
+TZ_RECIFE = pytz.timezone('America/Recife')
+# datetime.now(TZ_RECIFE)
 
 from models import *
 
@@ -76,8 +79,6 @@ def generate_breadcrumbs(crumbs):
     :return: Lista de breadcrumbs.
     """
     return crumbs
-
-
 
 
 # Decorator para bloquear rotas da aplicação que necessitem de autenticação
@@ -204,6 +205,164 @@ def excluir_cliente():
         flash('Cliente não encontrado!', 'danger')
     
     return redirect(url_for('clientes'))
+
+@app.route('/livros', methods=['GET', 'POST'])
+@login_required
+def livros():
+    if request.method == 'POST':
+        livro_id = request.form.get('id')
+        isbn = request.form.get('isbn')
+        titulo = request.form.get('titulo')
+        autor = request.form.get('autor')
+        genero_id = request.form.get('genero_id')
+        qtd_disponivel = request.form.get('qtd_disponivel')
+        qtd_total = request.form.get('qtd_total')
+
+        if not isbn or not titulo or not autor or not genero_id or not qtd_disponivel or not qtd_total:
+            flash('Todos os campos são obrigatórios!', 'danger')
+            return redirect(url_for('livros'))
+
+        if livro_id:
+            livro = Livro.query.get(livro_id)
+            if livro:
+                livro.isbn = isbn
+                livro.titulo = titulo
+                livro.autor = autor
+                livro.genero_id = genero_id
+                livro.qtd_disponivel = qtd_disponivel
+                livro.qtd_total = qtd_total
+                db.session.commit()
+                flash('Livro atualizado com sucesso!', 'success')
+        else:
+            novo_livro = Livro(isbn=isbn, titulo=titulo, autor=autor, genero_id=genero_id, qtd_disponivel=qtd_disponivel, qtd_total=qtd_total)
+            db.session.add(novo_livro)
+            db.session.commit()
+            flash('Livro adicionado com sucesso!', 'success')
+
+    # Busca
+    search_query = request.args.get('search')
+    if search_query:
+        search = "%{}%".format(search_query)
+        livros = Livro.query.filter(
+            (Livro.titulo.ilike(search)) | 
+            (Livro.autor.ilike(search)) | 
+            (Livro.isbn.ilike(search))
+        ).all()
+    else:
+        livros = Livro.query.all()
+
+    generos = Genero.query.all()  # Carrega todos os gêneros
+    
+    breadcrumbs = generate_breadcrumbs([
+        {'title': 'Inicio', 'url': url_for('index')},
+        {'title': 'Livros', 'url': url_for('livros')},
+    ])
+
+    context = {
+        'livros': livros,
+        'generos': generos,
+        'search_query': search_query if search_query else ''
+    }
+
+    return render_template('livros/livros.html', context=context, breadcrumbs=breadcrumbs)
+
+@app.route('/deletar_livro', methods=['POST'])
+@login_required
+def deletar_livro():
+    livro_id = request.form.get('id')
+    livro = Livro.query.get(livro_id)
+    if livro:
+        db.session.delete(livro)
+        db.session.commit()
+        flash('Livro deletado com sucesso!', 'success')
+    else:
+        flash('Livro não encontrado!', 'danger')
+    return redirect(url_for('livros'))
+
+@app.route('/adicionar_genero', methods=['POST'])
+@login_required
+def adicionar_genero():
+    nome = request.form.get('nome')
+    if not nome:
+        flash('Nome do gênero é obrigatório!', 'danger')
+        return redirect(url_for('livros'))
+    
+    novo_genero = Genero(nome=nome)
+    db.session.add(novo_genero)
+    db.session.commit()
+    flash('Gênero adicionado com sucesso!', 'success')
+    return redirect(url_for('livros'))
+
+@app.route('/emprestimos', methods=['GET', 'POST'])
+@login_required
+def emprestimos():
+    if request.method == 'POST':
+        id_livro = request.form.get('id_livro')
+        id_cliente = request.form.get('id_cliente')
+        id_usuario = request.cookies.get('user_id')
+
+        livro = Livro.query.get(id_livro)
+        cliente = Cliente.query.get(id_cliente)
+
+        # Verificar se o livro está disponível
+        if livro.qtd_disponivel <= 0:
+            flash('Livro sem estoque disponível.', 'danger')
+            return redirect(url_for('emprestimos'))
+
+        # Verificar se o cliente já tem 3 livros emprestados
+        emprestimos_cliente = Emprestimo.query.filter_by(id_cliente=id_cliente, data_devolucao=None).count()
+        if emprestimos_cliente >= 3:
+            flash('Cliente já tem 3 livros emprestados.', 'danger')
+            return redirect(url_for('emprestimos'))
+
+        # Criar novo empréstimo
+        novo_emprestimo = Emprestimo(id_livro=id_livro, id_cliente=id_cliente, id_usuario=id_usuario)
+        db.session.add(novo_emprestimo)
+
+        # Atualizar a quantidade disponível do livro
+        livro.qtd_disponivel -= 1
+
+        db.session.commit()
+        flash('Empréstimo realizado com sucesso!', 'success')
+
+    # Carregar todos os empréstimos
+    emprestimos = Emprestimo.query.order_by(desc(Emprestimo.data_emprestimo)).all()
+    livros = Livro.query.filter(Livro.qtd_disponivel > 0).all()
+    clientes = Cliente.query.all()
+    
+    breadcrumbs = generate_breadcrumbs([
+        {'title': 'Inicio', 'url': url_for('index')},
+        {'title': 'Emprestimos', 'url': url_for('emprestimos')},
+    ])
+
+    context = {
+        'emprestimos': emprestimos,
+        'livros': livros,
+        'clientes': clientes,
+    }
+
+    return render_template('emprestimos/emprestimos.html', context=context, breadcrumbs=breadcrumbs)
+
+@app.route('/devolucao', methods=['POST'])
+@login_required
+def devolucao():
+    id_emprestimo = request.form.get('id_emprestimo')
+
+    emprestimo = Emprestimo.query.get(id_emprestimo)
+    if emprestimo and not emprestimo.data_devolucao:
+        # Registrar a data de devolução
+        emprestimo.data_devolucao = datetime.now(TZ_RECIFE)
+
+        # Atualizar a quantidade disponível do livro
+        livro = Livro.query.get(emprestimo.id_livro)
+        livro.qtd_disponivel += 1
+
+        db.session.commit()
+        flash('Devolução realizada com sucesso!', 'success')
+    else:
+        flash('Empréstimo não encontrado ou já devolvido.', 'danger')
+
+    return redirect(url_for('emprestimos'))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,76 @@
+<div class="modal fade" id="ModalNovoLivro" tabindex="-1" aria-labelledby="ModalNovoLivroLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalNovoLivroLabel">Adicionar Livro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('livros') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="livro_id">
+                    <div class="mb-3">
+                        <label for="isbn" class="form-label">ISBN</label>
+                        <input type="text" class="form-control" id="isbn" name="isbn" minlength="13" maxlength="13"  required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="autor" class="form-label">Autor</label>
+                        <input type="text" class="form-control" id="autor" name="autor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="genero_id" class="form-label">Gênero</label>
+                        <div class="d-flex">
+                            <select class="form-select" id="genero_id" name="genero_id" required>
+                                <option value="">Selecione um gênero</option>
+                                {% for genero in context.generos %}
+                                <option value="{{ genero.id }}">{{ genero.nome }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#ModalAdicionarGenero">
+                                Adicionar Gênero
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="qtd_disponivel" class="form-label">Quantidade Disponível</label>
+                        <input type="number" class="form-control" id="qtd_disponivel" name="qtd_disponivel" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="qtd_total" class="form-label">Quantidade Total</label>
+                        <input type="number" class="form-control" id="qtd_total" name="qtd_total" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAdicionarGenero" tabindex="-1" aria-labelledby="ModalAdicionarGeneroLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalAdicionarGeneroLabel">Adicionar Gênero</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('adicionar_genero') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nome_genero" class="form-label">Nome do Gênero</label>
+                        <input type="text" class="form-control" id="nome_genero" name="nome" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

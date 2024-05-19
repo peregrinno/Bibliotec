@@ -69,7 +69,7 @@ class Emprestimo(db.Model):
     id_livro = db.Column(db.Integer, db.ForeignKey('tb_livro.id'), nullable=False)
     id_cliente = db.Column(db.Integer, db.ForeignKey('tb_clientes.id'), nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey('tb_usuarios.id'), nullable=False)
-    data_emprestimo = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    data_emprestimo = db.Column(db.DateTime, default=datetime.now(TZ_RECIFE), nullable=False)
     data_devolucao = db.Column(db.DateTime, nullable=True)
 
     livro = db.relationship('Livro', backref='emprestimos', lazy=True)

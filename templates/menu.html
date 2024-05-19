@@ -17,10 +17,10 @@
           <a class="nav-link {% if 'clientes' in request.path %} active {% endif %} text-light" href="{{url_for('clientes')}}"><i class="bi bi-people-fill"></i> Clientes</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if 'livros' in request.path %} active {% endif %} text-light" href="#"><i class="bi bi-journal"></i> Livros</a>
+          <a class="nav-link {% if 'livros' in request.path %} active {% endif %} text-light" href="{{url_for('livros')}}"><i class="bi bi-journal"></i> Livros</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if 'emprestimos' in request.path %} active {% endif %} text-light" href="#"><i class="bi bi-journal-bookmark"></i> Emprestimos</a>
+          <a class="nav-link {% if 'emprestimos' in request.path %} active {% endif %} text-light" href="{{url_for('emprestimos')}}"><i class="bi bi-journal-bookmark"></i> Emprestimos</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if 'relatorios' in request.path %} active {% endif %} text-light" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Relatórios</a>
