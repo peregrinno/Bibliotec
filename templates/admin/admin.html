@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Administração
+{% endblock title %}
+
+{% block content %}
+{% include 'menu.html' %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container">
+    <div class="row mb-3">
+        <h3 class="fw-bold">Administração</h3>
+    </div>
+    {% include 'actions/messages.html' %}
+    <div class="d-flex mb-3">
+        <div class="p-2 flex-grow-1">
+            <form class="d-flex w-50" role="search" method="get" action="{{ url_for('administracao') }}">
+                <input class="form-control me-2" type="search" name="search" placeholder="Procurar por email" aria-label="Search" value="{{ context.search_query }}">
+                <button class="btn btn-primary" type="submit">Procurar</button>
+            </form>
+        </div>
+        <div class="p-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoLivro">
+                <i class="bi bi-plus-circle-fill"></i>&nbsp;
+                Novo usuário
+            </button>
+        </div>
+        <div class="p-2">
+            <button class="btn btn-primary">
+                Exportar
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="text-center" scope="col">E-mail</th>
+                    <th class="text-center" scope="col">Administrador</th>
+                    <th class="text-center" scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if context.usuarios %}
+                {% for u in context.usuarios %}
+                <tr>
+                    <th scope="row">{{ u.id }}</th>
+                    <td class="text-center">{{ u.email }}</td>
+                    <td class="text-center">{{ u.e_adminitrador|string }}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
+                            data-bs-target="#ModalNovoUsuario" data-id="{{ u.id }}"
+                            data-isbn="{{ u.email }}" data-titulo="{{ u.e_adminitrador|string }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
+                            data-bs-target="#ModalDeleteUsuario" data-id="{{ u.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Sem usuários cadastrados ainda...</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% block script %}
+{% endblock script %}
+{% endblock content %}

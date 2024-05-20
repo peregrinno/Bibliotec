@@ -1,0 +1,35 @@
+<form method="GET" action="{{ url_for('emprestimos') }}" class="row g-3 mb-3">
+    <div class="col-md-3">
+        <label for="filter_cliente" class="form-label" style="font-size: 10pt;">Cliente</label>
+        <select id="filter_cliente" name="cliente" class="form-select" style="font-size: 10pt;">
+            <option value="">Todos</option>
+            {% for cliente in context.clientes %}
+            <option value="{{ cliente.id }}" {% if request.args.get('cliente') == cliente.id|string %}selected{% endif %}>
+                {{ cliente.email }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="filter_usuario" class="form-label" style="font-size: 10pt;">Usuário</label>
+        <select id="filter_usuario" name="usuario" class="form-select" style="font-size: 10pt;">
+            <option value="">Todos</option>
+            {% for usuario in context.usuarios %}
+            <option value="{{ usuario.id }}" {% if request.args.get('usuario') == usuario.id|string %}selected{% endif %}>
+                {{ usuario.email }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="filter_devolucao" class="form-label" style="font-size: 10pt;">Devolução</label>
+        <select id="filter_devolucao" name="devolucao" class="form-select" style="font-size: 10pt;">
+            <option value="">Todos</option>
+            <option value="1" {% if request.args.get('devolucao') == '1' %}selected{% endif %}>Devolvidos</option>
+            <option value="0" {% if request.args.get('devolucao') == '0' %}selected{% endif %}>Não devolvidos</option>
+        </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary" style="font-size: 10pt;">Filtrar</button>
+    </div>
+</form>

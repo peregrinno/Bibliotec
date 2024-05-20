@@ -10,5 +10,102 @@ Inicio
 {% include 'actions/messages.html' %}
 <div class="container">
     <h1 class="fw-bold">Página inicial</h1>
+    <div class="row m-3 p-3">
+        <div class="d-flex gap-4">
+            <div class="card border-0 shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 26pt;" class="counter" data-speed="1000"><i
+                            class="bi bi-book"></i> {{ context.total_livros_emprestados }}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Livros emprestados </h6>
+                </div>
+            </div>
+            <div class="card border-0 shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 26pt;"><i class="bi bi-book-fill"></i> {{
+                        context.livros_emprestados_atual }}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Livros emprestados atualmente</h6>
+                </div>
+            </div>
+            <div class="card border-0 shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 26pt;"><i class="bi bi-people-fill"></i> {{
+                        context.clientes_cadastradors }}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Clientes cadastrados </h6>
+                </div>
+            </div>
+            <div class="card border-0 shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 26pt;"><i class="bi bi-journal-bookmark-fill"></i> {{
+                        context.livros_cadastrados }}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Livros Cadastrados </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row m-4 p-3">
+        <div class="col-md-6 me-3 shadow">
+            <canvas id="emprestimosMensalChart"></canvas>
+        </div>
+        <div class="col shadow">
+            <canvas id="generosEmprestadosChart"></canvas>
+        </div>
+
+    </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function fetchChartData(url) {
+        const response = await fetch(url);
+        return await response.json();
+    }
+
+    function generateBarChart(ctx, data, labels) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Emprestimos',
+                    data: data,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function generateDoughnutChart(ctx, data, labels) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Emprestimos',
+                    data: data,
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const emprestimosData = await fetchChartData('/emprestimos_mensal');
+        const generosData = await fetchChartData('/generos_emprestados');
+
+        const emprestimosLabels = Object.keys(emprestimosData);
+        const emprestimosValues = Object.values(emprestimosData);
+
+        const generosLabels = Object.keys(generosData);
+        const generosValues = Object.values(generosData);
+
+        generateBarChart(document.getElementById('emprestimosMensalChart').getContext('2d'), emprestimosValues, emprestimosLabels);
+        generateDoughnutChart(document.getElementById('generosEmprestadosChart').getContext('2d'), generosValues, generosLabels);
+    });
+</script>
 {% endblock content %}

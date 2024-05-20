@@ -1,12 +1,11 @@
 from flask import Flask, jsonify, render_template, make_response, redirect, url_for, request, flash
-from flask_migrate import Migrate, upgrade
+from flask_migrate import Migrate
 from flask_cors import CORS
-from flask_paginate import Pagination
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from config import Config
 from models import db
 from functools import wraps
-from datetime import date
+from datetime import datetime, timedelta
 import subprocess
 import os
 import pytz
@@ -80,7 +79,6 @@ def generate_breadcrumbs(crumbs):
     """
     return crumbs
 
-
 # Decorator para bloquear rotas da aplicação que necessitem de autenticação
 def login_required(f):
     @wraps(f)
@@ -113,10 +111,11 @@ def login():
             
             # Cria uma resposta personalizada
             response = make_response(redirect(url_for('index')))
-            
+
             # Define cookies
             response.set_cookie('user_id', str(usuario.id))
             response.set_cookie('user_email', usuario.email)
+            response.set_cookie('valid', str(usuario.e_administrador))
             
             return response
         else:
@@ -132,13 +131,52 @@ def logout():
     response = make_response(redirect(url_for('login')))
     response.set_cookie('user_id', '', expires=0)
     response.set_cookie('user_email', '', expires=0)
+    response.set_cookie('valid', '', expires=0)
     return response
 
 @app.route('/index', methods=['GET'])
 @login_required
 def index():
+    livros_emprestados_atual = Emprestimo.query.filter_by(data_devolucao=None).count()
+    total_livros_emprestados = Emprestimo.query.all()
+    clientes_cadastrados = Cliente.query.all()
+    livros_cadastrados = Livro.query.all()
+
+    
+    context = {
+        'livros_emprestados_atual' : livros_emprestados_atual,
+        'total_livros_emprestados' : len(total_livros_emprestados),
+        'clientes_cadastradors' : len(clientes_cadastrados),
+        'livros_cadastrados' : len(livros_cadastrados),
+    }
+    
     breadcrumbs = generate_breadcrumbs([{'title': 'Inicio', 'url': url_for('index')}])
-    return render_template('index.html', breadcrumbs=breadcrumbs)
+    return render_template('index.html', breadcrumbs=breadcrumbs, context=context)
+
+@app.route('/administracao', methods=['GET'])
+@login_required
+def administracao(): 
+    
+    search_query = request.args.get('search')
+    if search_query:
+        search = "%{}%".format(search_query)
+        usuarios = Usuario.query.filter(
+            (Usuario.email.ilike(search))
+        ).all()
+    else:
+        usuarios = Usuario.query.all()
+    
+    context = {
+        'usuarios': usuarios,
+    }
+    
+    breadcrumbs = generate_breadcrumbs([
+        {'title': 'Inicio', 'url': url_for('index')},
+        {'title': 'Administração', 'url': url_for('administracao')}
+    ])
+    
+    render_template('admin/admin.html', breadcrumbs=breadcrumbs, context=context)
+
 
 # Rotas de cliente
 @app.route('/clientes', methods=['GET', 'POST'])
@@ -183,14 +221,17 @@ def clientes():
         {'title': 'Inicio', 'url': url_for('index')},
         {'title': 'Clientes', 'url': url_for('clientes')},
     ])
+    usuario = Usuario.query.filter_by(id=request.cookies.get('user_id')).first()
+    
+    e_admin = usuario.e_administrador
     
     context = {
         'clientes': clientes,
-        'search_query': search_query if search_query else ''
+        'search_query': search_query if search_query else '',
+        'e_admin': e_admin,
     }
     
     return render_template('clientes/clientes.html', context=context, breadcrumbs=breadcrumbs)
-
 
 @app.route('/excluir_cliente', methods=['POST'])
 @login_required
@@ -258,10 +299,15 @@ def livros():
         {'title': 'Livros', 'url': url_for('livros')},
     ])
 
+    usuario = Usuario.query.filter_by(id=request.cookies.get('user_id')).first()
+    
+    e_admin = usuario.e_administrador
+    
     context = {
         'livros': livros,
         'generos': generos,
-        'search_query': search_query if search_query else ''
+        'search_query': search_query if search_query else '',
+        'e_admin': e_admin
     }
 
     return render_template('livros/livros.html', context=context, breadcrumbs=breadcrumbs)
@@ -300,10 +346,14 @@ def emprestimos():
         id_livro = request.form.get('id_livro')
         id_cliente = request.form.get('id_cliente')
         id_usuario = request.cookies.get('user_id')
-
-        livro = Livro.query.get(id_livro)
-        cliente = Cliente.query.get(id_cliente)
-
+        
+        try:
+            livro = Livro.query.get(id_livro)
+            cliente = Cliente.query.get(id_cliente)
+        except:
+            flash('Livro ou cliente não exitem', 'danger')
+            return redirect(url_for('emprestimos'))
+        
         # Verificar se o livro está disponível
         if livro.qtd_disponivel <= 0:
             flash('Livro sem estoque disponível.', 'danger')
@@ -314,6 +364,12 @@ def emprestimos():
         if emprestimos_cliente >= 3:
             flash('Cliente já tem 3 livros emprestados.', 'danger')
             return redirect(url_for('emprestimos'))
+        
+        #Verifica se o cliente já tem esse livro emprestado
+        emprestimo_livro_cliente = Emprestimo.query.filter_by(id_cliente=id_cliente, id_livro=id_livro, data_devolucao=None).first()
+        if emprestimo_livro_cliente:
+            flash('Cliente já tem esse livro emprestado.', 'danger')
+            return redirect(url_for('emprestimos'))           
 
         # Criar novo empréstimo
         novo_emprestimo = Emprestimo(id_livro=id_livro, id_cliente=id_cliente, id_usuario=id_usuario)
@@ -324,21 +380,46 @@ def emprestimos():
 
         db.session.commit()
         flash('Empréstimo realizado com sucesso!', 'success')
+        
+    # Processar filtros
+    emprestimos_query = Emprestimo.query.order_by(desc(Emprestimo.data_emprestimo))
+    
+    cliente_id = request.args.get('cliente')
+    if cliente_id:
+        emprestimos_query = emprestimos_query.filter_by(id_cliente=cliente_id)
+    
+    usuario_id = request.args.get('usuario')
+    if usuario_id:
+        emprestimos_query = emprestimos_query.filter_by(id_usuario=usuario_id)
+    
+    devolucao = request.args.get('devolucao')
+    if devolucao is not None:
+        if devolucao == '1':
+            emprestimos_query = emprestimos_query.filter(Emprestimo.data_devolucao.isnot(None))
+        elif devolucao == '0':
+            emprestimos_query = emprestimos_query.filter(Emprestimo.data_devolucao.is_(None))
 
     # Carregar todos os empréstimos
-    emprestimos = Emprestimo.query.order_by(desc(Emprestimo.data_emprestimo)).all()
+    emprestimos = emprestimos_query.all()
     livros = Livro.query.filter(Livro.qtd_disponivel > 0).all()
     clientes = Cliente.query.all()
+    usuarios = Usuario.query.all()
     
     breadcrumbs = generate_breadcrumbs([
         {'title': 'Inicio', 'url': url_for('index')},
         {'title': 'Emprestimos', 'url': url_for('emprestimos')},
     ])
+    
+    usuario = Usuario.query.filter_by(id=request.cookies.get('user_id')).first()
+    
+    e_admin = usuario.e_administrador
 
     context = {
         'emprestimos': emprestimos,
         'livros': livros,
         'clientes': clientes,
+        'usuarios': usuarios,
+        'e_admin': e_admin,
     }
 
     return render_template('emprestimos/emprestimos.html', context=context, breadcrumbs=breadcrumbs)
@@ -363,6 +444,30 @@ def devolucao():
         flash('Empréstimo não encontrado ou já devolvido.', 'danger')
 
     return redirect(url_for('emprestimos'))
+
+@app.route('/emprestimos_mensal', methods=['GET'])
+@login_required
+def emprestimos_mensal():
+    emprestimos = db.session.query(
+        db.func.date_format(Emprestimo.data_emprestimo, '%Y-%m').label('month'),
+        db.func.count(Emprestimo.id).label('count')
+    ).group_by('month').all()
+
+    result = {month: count for month, count in emprestimos}
+    return jsonify(result)
+
+@app.route('/generos_emprestados', methods=['GET'])
+@login_required
+def generos_emprestados():
+    generos = db.session.query(
+        Genero.nome,
+        db.func.count(Emprestimo.id).label('count')
+    ).join(Livro, Livro.genero_id == Genero.id)\
+     .join(Emprestimo, Emprestimo.id_livro == Livro.id)\
+     .group_by(Genero.id).all()
+
+    result = {nome: count for nome, count in generos}
+    return jsonify(result)
 
 
 if __name__ == '__main__':

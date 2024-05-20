@@ -12,13 +12,16 @@ Empréstimos
         <h3 class="fw-bold">Empréstimos</h3>
     </div>
     {% include 'actions/messages.html' %}
-    <div class="d-flex mb-3">
+    <div class="d-flex">
         <div class="p-2">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoEmprestimo">
                 <i class="bi bi-plus-circle-fill"></i>&nbsp;
                 Novo Empréstimo
             </button>
         </div>
+    </div>
+    <div class="row">
+        {% include 'emprestimos/formsEmprestimos/filterform.html' %}
     </div>
     <div class="row">
         <table class="table">
