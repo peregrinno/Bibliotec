@@ -175,7 +175,7 @@ def administracao():
         {'title': 'Administração', 'url': url_for('administracao')}
     ])
     
-    render_template('admin/admin.html', breadcrumbs=breadcrumbs, context=context)
+    return render_template('admin/admin.html', breadcrumbs=breadcrumbs, context=context)
 
 
 # Rotas de cliente

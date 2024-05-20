@@ -47,7 +47,13 @@ Administração
                 <tr>
                     <th scope="row">{{ u.id }}</th>
                     <td class="text-center">{{ u.email }}</td>
-                    <td class="text-center">{{ u.e_adminitrador|string }}</td>
+                    <td class="text-center">
+                        {% if u.e_administrador == True %}
+                        <span class="badge text-bg-primary">Admin</span> 
+                        {% else %}
+                        <span class="badge text-bg-secondary">Cadastrador</span>
+                        {% endif %}
+                    </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
                             data-bs-target="#ModalNovoUsuario" data-id="{{ u.id }}"
