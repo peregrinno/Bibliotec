@@ -59,10 +59,12 @@ Clientes
                             data-telefone="{{ cliente.telefone }}">
                             <i class="bi bi-pencil-square"></i>
                         </button>
+                        {% if request.cookies.get('valid') == 'True' %}
                         <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
                             data-bs-target="#ModalDeleteCliente" data-id="{{ cliente.id }}">
                             <i class="bi bi-trash"></i>
                         </button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

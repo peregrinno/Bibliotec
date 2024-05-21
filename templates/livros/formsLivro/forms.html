@@ -74,3 +74,27 @@
         </div>
     </div>
 </div>
+
+{% if request.cookies.get('valid') == 'True' %}
+<!-- Modal confirmação de cliente-->
+<div class="modal fade" id="ModalDeleteLivro" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir este livro?
+            </div>
+            <div class="modal-footer">
+                <form id="formDeleteLivro" method="post" action="{{ url_for('deletar_livro') }}">
+                    <input type="hidden" id="delete_livro_id" name="id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

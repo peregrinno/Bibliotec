@@ -69,7 +69,7 @@ class Genero(db.Model):
 class Emprestimo(db.Model):
     __tablename__ = 'tb_emprestimos'
     id = db.Column(db.Integer, primary_key=True)
-    id_livro = db.Column(db.Integer, db.ForeignKey('tb_livro.id'), nullable=False)
+    id_livro = db.Column(db.Integer, db.ForeignKey('tb_livro.id'),nullable=False)
     id_cliente = db.Column(db.Integer, db.ForeignKey('tb_clientes.id'), nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey('tb_usuarios.id'), nullable=False)
     data_emprestimo = db.Column(db.DateTime, default=datetime.now(TZ_RECIFE), nullable=False)

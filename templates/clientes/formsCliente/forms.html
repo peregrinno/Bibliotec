@@ -30,6 +30,7 @@
     </div>
 </div>
 
+{% if request.cookies.get('valid') == 'True' %}
 <!-- Modal confirmação de cliente-->
 <div class="modal fade" id="ModalDeleteCliente" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -51,3 +52,4 @@
         </div>
     </div>
 </div>
+{% endif %}

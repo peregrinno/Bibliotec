@@ -98,6 +98,26 @@ def login_required(f):
 
     return decorated_function
 
+# Decorator para bloquear rotas da aplicação que necessitem de autenticação
+def login_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user_id = request.cookies.get('user_id')
+        user_email = request.cookies.get('user_email')
+
+        if user_id and user_email:
+            user = Usuario.query.filter_by(id=user_id, email=user_email).first()
+            if user and user.e_administrador == True:
+                # Adiciona o usuário à requisição para ser acessado nas rotas protegidas
+                request.user = user
+                return f(*args, **kwargs)
+
+        # Redireciona para a página de login se o usuário não estiver autenticado
+        flash('Acesso negado, usuário não autorizado', 'danger')
+        return redirect(url_for('index'))
+
+    return decorated_function
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -155,6 +175,7 @@ def index():
 
 @app.route('/administracao', methods=['GET', 'POST'])
 @login_required
+@login_admin_required
 def administracao(): 
     if request.method == 'POST':
         usuario_id = request.form.get('id')
@@ -207,6 +228,7 @@ def administracao():
 
 @app.route('/excluir_usuario', methods=['POST'])
 @login_required
+@login_admin_required
 def excluir_usuario():
     usuario_id = request.form.get('id')
     
@@ -226,6 +248,7 @@ def excluir_usuario():
 
 @app.route('/resetSenhaAdmin', methods=['GET','POST'])
 @login_required
+@login_admin_required
 def resetSenhaAdmin():
     if request.method == 'POST':
         user_id = request.form.get('email')
@@ -321,6 +344,12 @@ def clientes():
 def excluir_cliente():
     cliente_id = request.form.get('id')
     cliente = Cliente.query.get(cliente_id)
+    
+    emprestimos_cliente = Emprestimo.query.filter_by(id_cliente=cliente_id).first()
+    if emprestimos_cliente:
+        flash('Não foi possivel apagar esse cliente. Existem emprestimos associados ao mesmo.', 'warning')
+        return redirect(url_for('clientes'))
+    
     if cliente:
         db.session.delete(cliente)
         db.session.commit()
@@ -400,6 +429,12 @@ def livros():
 @login_required
 def deletar_livro():
     livro_id = request.form.get('id')
+    emprestimos_livro = Emprestimo.query.filter_by(id_livro=livro_id).first()
+    
+    if emprestimos_livro:
+        flash('Não foi possivel apagar esse livro. Existem emprestimos associados ao mesmo.', 'warning')
+        return redirect(url_for('livros'))
+    
     livro = Livro.query.get(livro_id)
     if livro:
         db.session.delete(livro)
@@ -583,6 +618,23 @@ def perfilUsuario():
     
     return render_template('usuario/perfilUsuario.html', context=context, breadcrumbs=breadcrumbs)
 
+@app.errorhandler(500)
+def internal_server_error(error):
+    # Manipulador de erro para o código de erro 500
+    flash('Algo não saiu como esperavamos, tente mais tarde.', 'danger')
+    return redirect(url_for('index'))
+    
+@app.errorhandler(404)
+def not_found_error(error):
+    # Manipulador de erro para o código de erro 404
+    flash('Url não encontrada.', 'danger')
+    return redirect(url_for('index'))
+
+@app.errorhandler(405)
+def not_found_error(error):
+    # Manipulador de erro para o código de erro 403
+    flash('Acesso negado.', 'danger')
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     #run_migrations()
