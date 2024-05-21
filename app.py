@@ -153,12 +153,40 @@ def index():
     breadcrumbs = generate_breadcrumbs([{'title': 'Inicio', 'url': url_for('index')}])
     return render_template('index.html', breadcrumbs=breadcrumbs, context=context)
 
-@app.route('/administracao', methods=['GET'])
+@app.route('/administracao', methods=['GET', 'POST'])
 @login_required
 def administracao(): 
+    if request.method == 'POST':
+        usuario_id = request.form.get('id')
+        email = request.form.get('email')
+        nivel_de_acesso = request.form.get('nivel_de_acesso')
+        
+        if not email or not nivel_de_acesso:
+            flash('Todos os campos são obrigatórios!', 'danger')
+            return redirect(url_for('administracao'))
+        
+        if usuario_id:
+            usuario = Usuario.query.get(usuario_id)
+            if usuario:
+                usuario.email = email
+                usuario.e_administrador = True if nivel_de_acesso == '1' else False
+                db.session.commit()
+                flash('Usuário atualizado com sucesso!', 'success')
+                return redirect(url_for('administracao'))
+        else:
+            novo_usuario = Usuario(
+                email=email, 
+                e_administrador=True if nivel_de_acesso == '1' else False,
+                password='bibliotec'
+            )
+            db.session.add(novo_usuario)
+            db.session.commit()
+            flash('Usuário adicionado com sucesso, senha padrão bibliotec adcionada, usuario deve resetar senha para usar o sistema!', 'success')
+            return redirect(url_for('administracao'))
+
     
     search_query = request.args.get('search')
-    if search_query:
+    if search_query:    
         search = "%{}%".format(search_query)
         usuarios = Usuario.query.filter(
             (Usuario.email.ilike(search))
@@ -177,6 +205,65 @@ def administracao():
     
     return render_template('admin/admin.html', breadcrumbs=breadcrumbs, context=context)
 
+@app.route('/excluir_usuario', methods=['POST'])
+@login_required
+def excluir_usuario():
+    usuario_id = request.form.get('id')
+    
+    usuario = Usuario.query.get(usuario_id)
+    if usuario:
+        user_email = request.cookies.get('user_email')
+        if user_email == usuario.email:
+            flash('Usuário não pode apagar a propria conta!', 'danger')
+        else:
+            db.session.delete(usuario)
+            db.session.commit()
+            flash('Usuário excluído com sucesso!', 'success')
+    else:
+        flash('Usuário não encontrado!', 'danger')
+    
+    return redirect(url_for('administracao'))
+
+@app.route('/resetSenhaAdmin', methods=['GET','POST'])
+@login_required
+def resetSenhaAdmin():
+    if request.method == 'POST':
+        user_id = request.form.get('email')
+        nova_senha = request.form.get('nova_senha')
+    
+        user_id_logged = request.cookies.get('user_id')
+        
+        usuario = Usuario.query.filter_by(id=user_id).first() #Procura um usuario com o ID
+        if usuario: #Se existir, realiza reset
+            usuario.reset_password(nova_senha) # Chama metodo de reset e senha
+            db.session.commit() #Confirma transação
+
+            if usuario.id == int(user_id_logged): #Se o usuario for igual ao que esta logado, realiza logout para acessar com novas credenciais
+                flash('Senha atualizada com sucesso! Acesse com as novas credenciais.', 'success')
+                return redirect(url_for('logout'))
+            else:
+                #Senão. retorna para a pagina de reset de senha
+                flash('Senha atualizada com sucesso!', 'success')
+                return redirect(url_for('resetSenhaAdmin'))
+        
+        else:
+            flash('Usuário não encontrado', 'danger')
+            return redirect(url_for('resetSenhaAdmin'))
+        
+    usuarios = Usuario.query.all()
+    
+    context = {
+        'usuarios': usuarios,
+    }
+    
+    breadcrumbs = generate_breadcrumbs([
+        {'title': 'Inicio', 'url': url_for('index')},
+        {'title': 'Administração', 'url': url_for('administracao')},
+        {'title': 'Redefinição de senha', 'url': url_for('resetSenhaAdmin')}
+    ])
+    
+    
+    return render_template('admin/resetSenha.html', context=context, breadcrumbs=breadcrumbs)
 
 # Rotas de cliente
 @app.route('/clientes', methods=['GET', 'POST'])
@@ -220,15 +307,11 @@ def clientes():
     breadcrumbs = generate_breadcrumbs([
         {'title': 'Inicio', 'url': url_for('index')},
         {'title': 'Clientes', 'url': url_for('clientes')},
-    ])
-    usuario = Usuario.query.filter_by(id=request.cookies.get('user_id')).first()
-    
-    e_admin = usuario.e_administrador
+    ])    
     
     context = {
         'clientes': clientes,
         'search_query': search_query if search_query else '',
-        'e_admin': e_admin,
     }
     
     return render_template('clientes/clientes.html', context=context, breadcrumbs=breadcrumbs)
@@ -247,6 +330,7 @@ def excluir_cliente():
     
     return redirect(url_for('clientes'))
 
+# Rotas de livros
 @app.route('/livros', methods=['GET', 'POST'])
 @login_required
 def livros():
@@ -339,6 +423,7 @@ def adicionar_genero():
     flash('Gênero adicionado com sucesso!', 'success')
     return redirect(url_for('livros'))
 
+# Rotas de emprestimos
 @app.route('/emprestimos', methods=['GET', 'POST'])
 @login_required
 def emprestimos():
@@ -445,6 +530,7 @@ def devolucao():
 
     return redirect(url_for('emprestimos'))
 
+# Rotas de dashboard
 @app.route('/emprestimos_mensal', methods=['GET'])
 @login_required
 def emprestimos_mensal():
@@ -468,6 +554,34 @@ def generos_emprestados():
 
     result = {nome: count for nome, count in generos}
     return jsonify(result)
+
+@app.route('/perfilUsuario', methods=['GET', 'POST'])
+@login_required
+def perfilUsuario():
+    user_email = request.cookies.get('user_email')
+    usuario = Usuario.query.filter_by(email=user_email).first()
+    
+    if request.method == 'POST':
+        nova_senha = request.form.get('nova_senha')
+
+        # Realiza reset
+        usuario.reset_password(nova_senha) # Chama metodo de reset e senha
+        db.session.commit() #Confirma transação
+        
+        flash('Senha atualizada com sucesso! Acesse com as novas credenciais.', 'success')
+        return redirect(url_for('logout'))
+    
+    context = {
+        'usuario': usuario,
+    }
+    
+    breadcrumbs = generate_breadcrumbs([
+        {'title': 'Inicio', 'url': url_for('index')},
+        {'title': 'Perfil', 'url': url_for('perfilUsuario')}
+    ])
+    
+    
+    return render_template('usuario/perfilUsuario.html', context=context, breadcrumbs=breadcrumbs)
 
 
 if __name__ == '__main__':

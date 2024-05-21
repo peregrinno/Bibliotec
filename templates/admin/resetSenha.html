@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Administração
+{% endblock title %}
+
+{% block content %}
+{% include 'menu.html' %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container">
+    <div class="row mb-3">
+        <h3 class="fw-bold">Reset de senha</h3>
+    </div>
+    {% include 'actions/messages.html' %}
+    <div class="row">
+        {% include 'admin/formsAdmin/resetSenhaForm.html' %}
+    </div>
+</div>
+
+{% include 'admin/formsAdmin/forms.html' %}
+{% include 'components/js-senha.html' %}
+
+
+{% endblock content %}

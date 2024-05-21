@@ -1,0 +1,21 @@
+<form action="{{url_for('resetSenhaAdmin')}}" method="post" class="form-group">
+    <div class="row">
+        <div class="col mb-3">
+            <label for="email" class="form-label">E-mail do usuário</label>
+            <select name="email" name="email" id="email" class="form-control" required>
+                <option value="">Selecione um usuario</option>
+                {% for usuario in context.usuarios %}
+                    <option value="{{usuario.id}}">{{ usuario.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col mb-3">
+            <label for="nova_senha" class="form-label">Nova senha</label>
+            <input type="text" name="nova_senha" name="nova_senha" id="nova_senha" class="form-control" required>
+            <p id="password-strength" style="padding: 10px; margin-top: 7px; border-radius: 10px;"></p>
+        </div>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+</form>

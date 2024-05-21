@@ -20,15 +20,15 @@ Administração
             </form>
         </div>
         <div class="p-2">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoLivro">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoUsuario">
                 <i class="bi bi-plus-circle-fill"></i>&nbsp;
                 Novo usuário
             </button>
         </div>
         <div class="p-2">
-            <button class="btn btn-primary">
-                Exportar
-            </button>
+            <a class="btn btn-primary" href="{{ url_for('resetSenhaAdmin') }}"><i class="bi bi-arrow-clockwise"></i> 
+                Reset de senha
+            </a>
         </div>
     </div>
     <div class="row">
@@ -57,7 +57,7 @@ Administração
                     <td class="text-center">
                         <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
                             data-bs-target="#ModalNovoUsuario" data-id="{{ u.id }}"
-                            data-isbn="{{ u.email }}" data-titulo="{{ u.e_adminitrador|string }}">
+                            data-email="{{ u.email }}" data-acesso="{% if u.e_administrador == True %}1{% else %}0{% endif %}">
                             <i class="bi bi-pencil-square"></i>
                         </button>
                         <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
@@ -76,6 +76,50 @@ Administração
         </table>
     </div>
 </div>
+
+{% include 'admin/formsAdmin/forms.html' %}
+
 {% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalNovoUsuario = document.getElementById('ModalNovoUsuario');
+        modalNovoUsuario.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var usuarioId = button.getAttribute('data-id');
+            var email = button.getAttribute('data-email');
+            var nivel_acesso = button.getAttribute('data-acesso');
+
+            var modalTitle = modalNovoUsuario.querySelector('.modal-title');
+            var form = modalNovoUsuario.querySelector('form');
+            var inputId = form.querySelector('#usuario_id');
+            var inputEmail = form.querySelector('#email');
+            var inputAcesso = form.querySelector('#nivel_de_acesso');
+
+            if (usuarioId) {
+                modalTitle.textContent = 'Editar Usuario';
+                form.action = '{{ url_for("administracao") }}';
+                inputId.value =  usuarioId;
+                inputEmail.value = email;
+                inputAcesso.value = nivel_acesso;
+            } else {
+                modalTitle.textContent = 'Adicionar Usuario';
+                form.action = '{{ url_for("administracao") }}';
+                inputId.value = '';
+                inputEmail.value = '';
+                inputAcesso.value = '';
+            }
+        });
+
+        var modalDeleteUsuario = document.getElementById('ModalDeleteUsuario');
+        modalDeleteUsuario.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var usuarioId = button.getAttribute('data-id');
+
+            var formDelete = modalDeleteUsuario.querySelector('form');
+            var inputId = formDelete.querySelector('#delete_usuario_id');
+            inputId.value = usuarioId;
+        });
+    });
+</script>
 {% endblock script %}
 {% endblock content %}

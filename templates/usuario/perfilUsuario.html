@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Perfil
+{% endblock title %}
+
+{% block content %}
+{% include 'menu.html' %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container">
+    <div class="row mb-3">
+        <h3 class="fw-bold">Perfil</h3>
+    </div>
+    {% include 'actions/messages.html' %}
+    <div class="d-flex mb-3">
+        <p>Email: <b>{{ context.usuario.email }}</b></p>
+    </div>
+    <div class="row">
+        <form action="{{ url_for('perfilUsuario') }}" method="post" class="form-group col-3">
+            <div class="col mb-3">
+                <label for="nova_senha" class="form-label">Nova senha</label>
+                <input type="text" name="nova_senha" name="nova_senha" id="nova_senha" class="form-control" required>
+                <p id="password-strength" style="padding: 10px; margin-top: 7px; border-radius: 10px;"></p>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% include 'components/js-senha.html' %}
+{% endblock content %}

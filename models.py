@@ -21,6 +21,9 @@ class Usuario(db.Model):
         self.set_password(password)
         self.e_administrador = e_administrador
         
+    def reset_password(self, new_password):
+        self.set_password(new_password)
+        
     def set_password(self, password):
         self.password = generate_password_hash(password)
 

@@ -1,0 +1,54 @@
+<div class="modal fade" id="ModalNovoUsuario" tabindex="-1" aria-labelledby="ModalNovoUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalNovoUsuarioLabel">Adicionar Usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('administracao') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="usuario_id">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="text" class="form-control" id="email" name="email"  required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nivel_de_acesso" class="form-label">Nivel de acesso</label>
+                        <select class="form-select" id="nivel_de_acesso" name="nivel_de_acesso" required>
+                            <option value="">Selecione</option>
+                            <option value="1">Administrador</option>
+                            <option value="0">Cadastrador</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal confirmação de usuario-->
+<div class="modal fade" id="ModalDeleteUsuario" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir este usuário?
+            </div>
+            <div class="modal-footer">
+                <form id="formDeleteUsuario" method="post" action="{{ url_for('excluir_usuario') }}">
+                    <input type="hidden" id="delete_usuario_id" name="id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

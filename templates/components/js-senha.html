@@ -1,0 +1,61 @@
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#nova_senha').on('input', function () {
+            var password = $(this).val();
+            var strength = 0;
+            var tips = "";
+
+            // Checar tamanho da senha digitada
+            if (password.length < 8) {
+                tips += "Informe uma senha maior. ";
+            } else {
+                strength += 1;
+            }
+
+            // Checar tipos de caracteres
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+                strength += 1;
+            } else {
+                tips += "Use letras minusculas e maiusculas. ";
+            }
+
+            // Checar numeros
+            if (password.match(/\d/)) {
+                strength += 1;
+            } else {
+                tips += "Inclua ao menos um número. ";
+            }
+
+            // Checar caracteres especiais
+            if (password.match(/[^a-zA-Z\d]/)) {
+                strength += 1;
+            } else {
+                tips += "Inclua ao menos um caractere especial. ";
+            }
+
+            // Atualizar estilo de aviso de acordo com a força da senha
+            var passwordStrengthElement = $('#password-strength');
+            if (strength < 2) {
+                passwordStrengthElement.text("Fácil de invadir. " + tips);
+                passwordStrengthElement.css('color', 'white');
+                passwordStrengthElement.css('background-color', 'red');
+            } else if (strength === 2) {
+                passwordStrengthElement.text("Dificuldade mediana. " + tips);
+                passwordStrengthElement.css('color', 'white');
+                passwordStrengthElement.css('background-color', 'orange');
+            } else if (strength === 3) {
+                passwordStrengthElement.text("Difícil. " + tips);
+                passwordStrengthElement.css('color', 'white');
+                passwordStrengthElement.css('background-color', 'black');
+            } else {
+                passwordStrengthElement.text("Muito difícil!. " + tips);
+                passwordStrengthElement.css('color', 'white');
+                passwordStrengthElement.css('background-color', 'green');
+            }
+        });
+    });
+</script>
+{% endblock script %}

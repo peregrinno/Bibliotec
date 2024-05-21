@@ -27,7 +27,11 @@
         </li>
         {% if request.cookies.get('valid') == 'True' %}
         <li class="nav-item">
-          <a class="nav-link {% if 'admin' in request.path %} active {% endif %} text-light" href="{{url_for('administracao')}}"><i class="bi bi-diagram-2-fill"></i> Admin</a>
+          <a class="nav-link {% if 'administracao' in request.path %} active {% endif %} text-light" href="{{url_for('administracao')}}"><i class="bi bi-diagram-2-fill"></i> Admin</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link {% if 'perfilUsuario' in request.path %} active {% endif %} text-light" href="{{url_for('perfilUsuario')}}"><i class="bi bi-person-badge"></i> Perfil</a>
         </li>
         {% endif %}
       </ul>
