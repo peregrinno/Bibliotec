@@ -760,8 +760,5 @@ def gerar_testes():
 
 if __name__ == '__main__':
     #gerar_testes()
-    if os.environ.get('PRODUCTION'):
-        run_migrations()
-        app.run(debug=False)
-    else:
-        app.run(debug=True, port=8083)
+    run_migrations()
+    app.run(debug=True, port=8083)
