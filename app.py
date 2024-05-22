@@ -6,12 +6,12 @@ from config import Config
 from models import db
 from functools import wraps
 from datetime import datetime, timedelta
-import subprocess
-import os, hashlib
-
+import subprocess, os, hashlib
+ 
 
 # datetime.now(TZ_RECIFE)
 
+from tests import *
 from models import *
 
 # Cria instancia de aplicativo Flask
@@ -698,7 +698,68 @@ def not_found_error(error):
     flash('Acesso negado.', 'danger')
     return redirect(url_for('index'))
 
+def gerar_testes():
+    with app.app_context():
+        geners = generate_genres()
+        books = generate_books()
+        customers = generate_customers()
+        generos_ids = []
+        livros_ids = []
+        clients_ids = []
+        
+        users = Usuario.query.all()
+        users_id = [user.id for user in users]
+        
+        for gener in geners:
+            new_gener = Genero(
+                nome=gener
+            )
+            db.session.add(new_gener)
+            db.session.commit()
+            generos_ids.append(new_gener.id)
+        
+        for book in books:
+            new_book = Livro(
+                isbn=book['ISBN'],
+                titulo=book['Nome'],
+                autor= f'Autor { random.randint(1, 10)}{random.randint(1, 10)}{random.randint(1, 10)}',
+                genero_id=random.choice(generos_ids),
+                qtd_disponivel=book['Qtd_disponivel'],
+                qtd_total=book['Qtd_total'],
+            )
+            db.session.add(new_book)
+            db.session.commit()
+            livros_ids.append(new_book.id)
+            
+        for customer in customers:
+            new_customer = Cliente(
+                email = customer['Email'],
+                endereco = customer['Endereço'],
+                telefone = customer['Telefone'],
+            )
+            db.session.add(new_customer)
+            db.session.commit()
+            clients_ids.append(new_customer.id)
+            
+        for i in range(1, 1000):
+            livro_id = random.choice(livros_ids)
+            cliente_id = random.choice(clients_ids)
+            
+            data_emprestimo = datetime(2020, 1, 1) + timedelta(days=random.randint(0, (datetime.now() - datetime(2020, 1, 1)).days))
+            data_devolucao = data_emprestimo + timedelta(days=random.randint(1, 30))
+            
+            new_emprestimo = Emprestimo(
+                id_livro=livro_id,
+                id_cliente=cliente_id,
+                id_usuario=random.choice(users_id),
+                data_emprestimo=data_emprestimo,
+                data_devolucao=data_devolucao,
+            )
+            db.session.add(new_emprestimo)
+            db.session.commit()
+
 if __name__ == '__main__':
     #run_migrations()
+    #gerar_testes()
     
     app.run(debug=True, port=8083)
