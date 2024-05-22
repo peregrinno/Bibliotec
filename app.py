@@ -759,7 +759,7 @@ def gerar_testes():
             db.session.commit()
 
 if __name__ == '__main__':
-    #run_migrations()
+    run_migrations()
     #gerar_testes()
     
     app.run(debug=True, port=8083)
