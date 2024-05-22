@@ -2,7 +2,7 @@ import os
 
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('POSTGRES_URL', 'postgresql+psycopg2://bibliotec:bibliotec@localhost/bibliotec_db')
-    #postgresql://postgres+psycopg2:otxcgqFspXakktbhipHPIEFuEMRQbtsz@viaduct.proxy.rlwy.net:55762/railway
+    #postgresql+psycopg2://postgres:otxcgqFspXakktbhipHPIEFuEMRQbtsz@viaduct.proxy.rlwy.net:55762/railway
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
 """
