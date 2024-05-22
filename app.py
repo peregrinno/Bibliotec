@@ -632,7 +632,7 @@ def gerar_comprovante_devolucao(id_emprestimo):
 @login_required
 def emprestimos_mensal():
     emprestimos = db.session.query(
-        db.func.date_format(Emprestimo.data_emprestimo, '%Y-%m').label('month'),
+        db.func.to_char(Emprestimo.data_emprestimo, 'YYYY-MM').label('month'),
         db.func.count(Emprestimo.id).label('count')
     ).group_by('month').all()
 
@@ -759,7 +759,9 @@ def gerar_testes():
             db.session.commit()
 
 if __name__ == '__main__':
-    run_migrations()
     #gerar_testes()
-    
-    app.run(debug=True, port=8083)
+    if os.environ.get('PRODUCTION'):
+        run_migrations()
+        app.run(debug=False)
+    else:
+        app.run(debug=True, port=8083)
