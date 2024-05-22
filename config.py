@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.environ.get('MYSQL_URL', 'mysql+mysqlconnector://bibliotec:bibliotec@localhost/bibliotec_db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('MYSQL_URL', 'mysql+pymysql://bibliotec:bibliotec@localhost/bibliotec_db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
 """
