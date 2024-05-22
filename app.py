@@ -8,9 +8,8 @@ from functools import wraps
 from datetime import datetime, timedelta
 import subprocess
 import os
-import pytz
 
-TZ_RECIFE = pytz.timezone('America/Recife')
+
 # datetime.now(TZ_RECIFE)
 
 from models import *
@@ -98,7 +97,7 @@ def login_required(f):
 
     return decorated_function
 
-# Decorator para bloquear rotas da aplicação que necessitem de autenticação
+# Decorator para bloquear rotas da aplicação que necessitem de autenticação de administrador
 def login_admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -118,7 +117,32 @@ def login_admin_required(f):
 
     return decorated_function
 
-@app.route('/', methods=['GET', 'POST'])
+def password_reset_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user_id = request.cookies.get('user_id')
+        user_email = request.cookies.get('user_email')
+        user_admin = request.cookies.get('valid')
+        
+        if user_id and user_email:
+            user = Usuario.query.filter_by(id=user_id, email=user_email).first()
+            
+            if user.check_password('bibliotec') == False:
+                # Adiciona o usuário à requisição para ser acessado nas rotas protegidas
+                request.user = user
+                return f(*args, **kwargs)
+
+        # Redireciona para a página de login se o usuário não estiver autenticado
+        flash('Acesso restrito, reset sua senha para acessar o sistema', 'danger')
+        if user_admin == 'True':
+            return redirect(url_for('resetSenhaAdmin'))
+        elif user_admin == 'False':
+            return redirect(url_for('perfilUsuario'))
+
+    return decorated_function
+
+# Rota para realizar login
+@app.route('/', methods=['GET', 'POST']) # Sempre que acessar a rota, explicitar quais os metodos que serão usados
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -156,8 +180,9 @@ def logout():
 
 @app.route('/index', methods=['GET'])
 @login_required
+@password_reset_required
 def index():
-    livros_emprestados_atual = Emprestimo.query.filter_by(data_devolucao=None).count()
+    livros_emprestados_atual = Emprestimo.query.filter_by(data_devolucao=None).count() 
     total_livros_emprestados = Emprestimo.query.all()
     clientes_cadastrados = Cliente.query.all()
     livros_cadastrados = Livro.query.all()
@@ -176,6 +201,7 @@ def index():
 @app.route('/administracao', methods=['GET', 'POST'])
 @login_required
 @login_admin_required
+@password_reset_required
 def administracao(): 
     if request.method == 'POST':
         usuario_id = request.form.get('id')
@@ -229,6 +255,7 @@ def administracao():
 @app.route('/excluir_usuario', methods=['POST'])
 @login_required
 @login_admin_required
+@password_reset_required
 def excluir_usuario():
     usuario_id = request.form.get('id')
     
@@ -291,6 +318,7 @@ def resetSenhaAdmin():
 # Rotas de cliente
 @app.route('/clientes', methods=['GET', 'POST'])
 @login_required
+@password_reset_required
 def clientes():       
     if request.method == 'POST':
         cliente_id = request.form.get('id')
@@ -341,6 +369,7 @@ def clientes():
 
 @app.route('/excluir_cliente', methods=['POST'])
 @login_required
+@password_reset_required
 def excluir_cliente():
     cliente_id = request.form.get('id')
     cliente = Cliente.query.get(cliente_id)
@@ -362,6 +391,7 @@ def excluir_cliente():
 # Rotas de livros
 @app.route('/livros', methods=['GET', 'POST'])
 @login_required
+@password_reset_required
 def livros():
     if request.method == 'POST':
         livro_id = request.form.get('id')
@@ -394,7 +424,7 @@ def livros():
             flash('Livro adicionado com sucesso!', 'success')
 
     # Busca
-    search_query = request.args.get('search')
+    search_query = request.args.get('search') #127.0.0.1:8083?search='Harry'
     if search_query:
         search = "%{}%".format(search_query)
         livros = Livro.query.filter(
@@ -427,6 +457,8 @@ def livros():
 
 @app.route('/deletar_livro', methods=['POST'])
 @login_required
+@login_admin_required
+@password_reset_required
 def deletar_livro():
     livro_id = request.form.get('id')
     emprestimos_livro = Emprestimo.query.filter_by(id_livro=livro_id).first()
@@ -446,6 +478,7 @@ def deletar_livro():
 
 @app.route('/adicionar_genero', methods=['POST'])
 @login_required
+@password_reset_required
 def adicionar_genero():
     nome = request.form.get('nome')
     if not nome:
@@ -461,6 +494,7 @@ def adicionar_genero():
 # Rotas de emprestimos
 @app.route('/emprestimos', methods=['GET', 'POST'])
 @login_required
+@password_reset_required
 def emprestimos():
     if request.method == 'POST':
         id_livro = request.form.get('id_livro')
@@ -546,6 +580,7 @@ def emprestimos():
 
 @app.route('/devolucao', methods=['POST'])
 @login_required
+@password_reset_required
 def devolucao():
     id_emprestimo = request.form.get('id_emprestimo')
 
