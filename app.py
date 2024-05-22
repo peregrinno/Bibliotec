@@ -760,5 +760,5 @@ def gerar_testes():
 
 if __name__ == '__main__':
     #gerar_testes()
-    run_migrations()
+    #run_migrations()
     app.run(debug=True, port=8083)
