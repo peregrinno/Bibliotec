@@ -44,14 +44,28 @@ Empréstimos
                     <td class="text-center">{{ emprestimo.livro.titulo }}</td>
                     <td class="text-center">{{ emprestimo.cliente.email }}</td>
                     <td class="text-center">{{ emprestimo.usuario.email }}</td>
-                    <td class="text-center">{{ emprestimo.data_emprestimo }}</td>
-                    <td class="text-center">{{ emprestimo.data_devolucao or 'Ainda não devolvido' }}</td>
+                    <td class="text-center">{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S' ) }}</td>
                     <td class="text-center">
+                        {% if emprestimo.data_devolucao %}
+                        {{ emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M:%S' ) }}
+                        {% else %}
+                        Ainda não devolvido
+                        {% endif %}</td>
+                    <td class="text-center">
+                        <a class="btn btn-success p-2 m-1"
+                            href="{{ url_for('gerar_comprovante_emprestimo', id_emprestimo=emprestimo.id )}}">
+                            <i class="bi bi-file-earmark-arrow-up"></i>
+                        </a>
                         {% if not emprestimo.data_devolucao %}
                         <button type="button" class="btn btn-success p-2 m-1" data-bs-toggle="modal"
                             data-bs-target="#ModalDevolucaoEmprestimo" data-id="{{ emprestimo.id }}">
                             Devolver
                         </button>
+                        {% else %}
+                        <a class="btn btn-outline-success p-2 m-1"
+                            href="{{ url_for('gerar_comprovante_devolucao', id_emprestimo=emprestimo.id )}}">
+                            <i class="bi bi-file-earmark-arrow-down"></i>
+                        </a>
                         {% endif %}
                     </td>
                 </tr>
@@ -66,6 +80,22 @@ Empréstimos
     </div>
 </div>
 
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% for alerta in alertas %}
+    <div class="toast bg-danger text-light" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Alerta</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            {{ alerta }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
 {% include 'emprestimos/formsEmprestimos/forms.html' %}
 
 {% block script %}
@@ -78,6 +108,13 @@ Empréstimos
             var inputIdEmprestimo = modalDevolucao.querySelector('#id_emprestimo');
             inputIdEmprestimo.value = idEmprestimo;
         });
+
+        // Exibir toasts
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl, { autohide: false });
+        });
+        toastList.forEach(toast => toast.show());
     });
 </script>
 {% endblock script %}

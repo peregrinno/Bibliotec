@@ -7,7 +7,7 @@ from models import db
 from functools import wraps
 from datetime import datetime, timedelta
 import subprocess
-import os
+import os, hashlib
 
 
 # datetime.now(TZ_RECIFE)
@@ -31,6 +31,10 @@ CORS(app)
 
 # Cria objeto migrate para caso de mudanças no banco de dados, essas mudanças serem aplicadas
 migrate = Migrate(app, db)
+
+def hash_string(string):
+    hash_object = hashlib.sha256(string.encode())
+    return hash_object.hexdigest()
 
 # Função interna para realizar o DUMP no banco de dados ou Aplicar mudanças 
 def dump_database():
@@ -534,6 +538,7 @@ def emprestimos():
 
         db.session.commit()
         flash('Empréstimo realizado com sucesso!', 'success')
+        return redirect(url_for('gerar_comprovante_emprestimo', id_emprestimo=novo_emprestimo.id))
         
     # Processar filtros
     emprestimos_query = Emprestimo.query.order_by(desc(Emprestimo.data_emprestimo))
@@ -559,6 +564,13 @@ def emprestimos():
     clientes = Cliente.query.all()
     usuarios = Usuario.query.all()
     
+    alertas = []
+    
+    # Verificar se há algum empréstimo sem devolução há mais de 30 dias
+    for emprestimo in emprestimos:
+        if not emprestimo.data_devolucao and datetime.now() - emprestimo.data_emprestimo > timedelta(days=30):
+            alertas.append(f'O livro "{emprestimo.livro.titulo}" emprestado a cliente {emprestimo.cliente.email} está em atraso!')
+    
     breadcrumbs = generate_breadcrumbs([
         {'title': 'Inicio', 'url': url_for('index')},
         {'title': 'Emprestimos', 'url': url_for('emprestimos')},
@@ -576,7 +588,7 @@ def emprestimos():
         'e_admin': e_admin,
     }
 
-    return render_template('emprestimos/emprestimos.html', context=context, breadcrumbs=breadcrumbs)
+    return render_template('emprestimos/emprestimos.html', context=context, breadcrumbs=breadcrumbs, alertas=alertas)
 
 @app.route('/devolucao', methods=['POST'])
 @login_required
@@ -595,10 +607,25 @@ def devolucao():
 
         db.session.commit()
         flash('Devolução realizada com sucesso!', 'success')
+        return redirect(url_for('gerar_comprovante_devolucao', id_emprestimo=emprestimo.id))
     else:
         flash('Empréstimo não encontrado ou já devolvido.', 'danger')
 
     return redirect(url_for('emprestimos'))
+
+@app.route('/emprestimos/<int:id_emprestimo>/comprovante')
+@login_required
+def gerar_comprovante_emprestimo(id_emprestimo):
+    emprestimo = Emprestimo.query.get_or_404(id_emprestimo)
+    data_max = emprestimo.data_emprestimo + timedelta(days=30)
+    validation_code = hash_string(f'{emprestimo.id}{emprestimo.cliente}{emprestimo.livro}{emprestimo.data_emprestimo}')
+    return render_template('emprestimos/comprovante_emprestimo.html', emprestimo=emprestimo, data_max=data_max, validation_code=validation_code)
+
+@app.route('/emprestimos/<int:id_emprestimo>/comprovante-devolucao')
+def gerar_comprovante_devolucao(id_emprestimo):
+    emprestimo = Emprestimo.query.get_or_404(id_emprestimo)
+    validation_code = hash_string(f'{emprestimo.id}{emprestimo.cliente}{emprestimo.livro}{emprestimo.data_devolucao}')
+    return render_template('emprestimos/comprovante_devolucao.html', emprestimo=emprestimo, validation_code=validation_code)
 
 # Rotas de dashboard
 @app.route('/emprestimos_mensal', methods=['GET'])

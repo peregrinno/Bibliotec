@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="width: 640px;">
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            <button class="btn btn-outline-primary" id="backButton">Voltar</button>
+        </div>
+        <div class="">
+            <button class="btn btn-primary" id="printButton"><i class="bi bi-printer-fill"></i> Imprimir</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('printButton').addEventListener('click', function() {
+        window.print();
+    });
+
+    document.getElementById('backButton').addEventListener('click', function() {
+        window.history.back();
+    });
+</script>
+{% endblock content %}

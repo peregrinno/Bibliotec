@@ -22,9 +22,6 @@
         <li class="nav-item">
           <a class="nav-link {% if 'emprestimos' in request.path %} active {% endif %} text-light" href="{{url_for('emprestimos')}}"><i class="bi bi-journal-bookmark"></i> Emprestimos</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link {% if 'relatorios' in request.path %} active {% endif %} text-light" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Relatórios</a>
-        </li>
         {% if request.cookies.get('valid') == 'True' %}
         <li class="nav-item">
           <a class="nav-link {% if 'administracao' in request.path %} active {% endif %} text-light" href="{{url_for('administracao')}}"><i class="bi bi-diagram-2-fill"></i> Admin</a>

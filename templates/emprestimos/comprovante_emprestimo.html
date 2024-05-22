@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Comprovante de emprestimo
+{% endblock title %}
+
+{% block content %}
+{% include 'components/js-pdf.html' %}
+<div class="container mt-2 mb-2" style="width: 800px;">
+    <center>
+        <img class="mx-auto d-block" src="{{ url_for('static', filename='imgs/logo_bibliotec.svg')}}" alt=""
+            width="100">
+        <h5>Comprovante de empréstimo</h5>
+    </center>
+    <hr>
+    <div class="d-flex mb-3">
+        <div class="p-2 flex-grow-1">
+            Usuário: {{ emprestimo.usuario.email }}
+        </div>
+        <div class="p-2">
+            Exportação: {{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S')}}
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <b>Cliente</b>
+                <p>{{ emprestimo.cliente.email }}</p>
+                <b>Data do emprestimo</b>
+                <p>{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S')}}</p>
+            </div>
+            <div class="col">
+                <b>Livro</b>
+                <p>{{ emprestimo.livro.titulo }}</p>
+                <b>Data do devolução máxima</b>
+                <p>{{ data_max.strftime('%d/%m/%Y' ) }}</p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <b>Atenção</b>
+            <p>O descumprimento do tempo de cedência do livro pode impedir você de efetuar possíveis emprestimos futuros, bem como a adição do seu nome na lista de clientes inadimplentes da biblioteca.</p>
+        </div>
+        <center>
+            <b>Validação do documento</b>
+            <p>{{validation_code}}</p>
+        </center>
+    </div>
+</div>
+<form class=""></form>
+{% endblock content %}

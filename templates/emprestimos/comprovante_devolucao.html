@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Comprovante de devolução
+{% endblock title %}
+
+{% block content %}
+{% include 'components/js-pdf.html' %}
+<div class="container mt-2 mb-2" style="width: 800px;">
+    <center>
+        <img class="mx-auto d-block" src="{{ url_for('static', filename='imgs/logo_bibliotec.svg')}}" alt=""
+            width="100">
+        <h5>Comprovante de devolução</h5>
+    </center>
+    <hr>
+    <div class="d-flex mb-3">
+        <div class="p-2 flex-grow-1">
+            Usuário: {{ emprestimo.usuario.email }}
+        </div>
+        <div class="p-2">
+            Exportação: {{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S')}}
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <b>Cliente</b>
+                <p>{{ emprestimo.cliente.email }}</p>
+                <b>Data do emprestimo</b>
+                <p>{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S')}}</p>
+            </div>
+            <div class="col">
+                <b>Livro</b>
+                <p>{{ emprestimo.livro.titulo }}</p>
+                <b>Data de devolução</b>
+                <p>{{ emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M:%S') }}</p>
+            </div>
+        </div>
+        <hr>
+        <center>
+            <b>Validação do documento</b>
+            <p>{{validation_code}}</p>
+        </center>
+    </div>
+</div>
+<form class=""></form>
+{% endblock content %}
