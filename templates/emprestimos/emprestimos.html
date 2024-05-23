@@ -23,60 +23,59 @@ Empréstimos
     <div class="row">
         {% include 'emprestimos/formsEmprestimos/filterform.html' %}
     </div>
-    <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th class="text-center" scope="col">Livro</th>
-                    <th class="text-center" scope="col">Cliente</th>
-                    <th class="text-center" scope="col">Usuário</th>
-                    <th class="text-center" scope="col">Data Empréstimo</th>
-                    <th class="text-center" scope="col">Data Devolução</th>
-                    <th class="text-center" scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if context.emprestimos %}
-                {% for emprestimo in context.emprestimos %}
-                <tr>
-                    <th scope="row">{{ emprestimo.id }}</th>
-                    <td class="text-center">{{ emprestimo.livro.titulo }}</td>
-                    <td class="text-center">{{ emprestimo.cliente.email }}</td>
-                    <td class="text-center">{{ emprestimo.usuario.email }}</td>
-                    <td class="text-center">{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S' ) }}</td>
-                    <td class="text-center">
-                        {% if emprestimo.data_devolucao %}
-                        {{ emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M:%S' ) }}
-                        {% else %}
-                        Ainda não devolvido
-                        {% endif %}</td>
-                    <td class="text-center">
-                        <a class="btn btn-success p-2 m-1"
-                            href="{{ url_for('gerar_comprovante_emprestimo', id_emprestimo=emprestimo.id )}}">
-                            <i class="bi bi-file-earmark-arrow-up"></i>
-                        </a>
-                        {% if not emprestimo.data_devolucao %}
-                        <button type="button" class="btn btn-success p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalDevolucaoEmprestimo" data-id="{{ emprestimo.id }}">
-                            Devolver
-                        </button>
-                        {% else %}
-                        <a class="btn btn-outline-success p-2 m-1"
-                            href="{{ url_for('gerar_comprovante_devolucao', id_emprestimo=emprestimo.id )}}">
-                            <i class="bi bi-file-earmark-arrow-down"></i>
-                        </a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% if context.emprestimos %}
+        {% for emprestimo in context.emprestimos %}
+        <div class="card me-2" style="width: 600px;">
+            <div class="card-header">
+                {{ emprestimo.id }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><b>Livro: </b>{{ emprestimo.livro.titulo }}</h5>
+                <div class="row mb-3">
+                    <div class="col">
+                        <p class="card-text"><b>Cliente: </b>{{ emprestimo.cliente.email }}</p>
+                        <p class="card-text"><b>Usuário: </b>{{ emprestimo.usuario.email }}</p>
+                    </div>
+                    <div class="col">
+                        <p class="card-text">
+                            <b>Data de empréstimo: </b>
+                            {{ emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M:%S' ) }}
+                        </p>
+                        <p class="card-text">
+                            <b>Data de devolução: </b>
+                            {% if emprestimo.data_devolucao %}
+                            {{ emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M:%S' ) }}
+                            {% else %}
+                            Ainda não devolvido
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <a class="btn btn-success p-2 m-1"
+                    href="{{ url_for('gerar_comprovante_emprestimo', id_emprestimo=emprestimo.id )}}">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Comp. Emprestimo
+                </a>
+                {% if not emprestimo.data_devolucao %}
+                <button type="button" class="btn btn-success p-2 m-1" data-bs-toggle="modal"
+                    data-bs-target="#ModalDevolucaoEmprestimo" data-id="{{ emprestimo.id }}">
+                    Devolver
+                </button>
                 {% else %}
-                <tr>
-                    <td colspan="7" class="text-center">Sem empréstimos cadastrados ainda...</td>
-                </tr>
+                <a class="btn btn-outline-success p-2 m-1"
+                    href="{{ url_for('gerar_comprovante_devolucao', id_emprestimo=emprestimo.id )}}">
+                    <i class="bi bi-file-earmark-arrow-down"></i> Comp. Devolução
+                </a>
                 {% endif %}
-            </tbody>
-        </table>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center">Sem empréstimos cadastrados ainda...</td>
+        </tr>
+        {% endif %}
     </div>
 </div>
 

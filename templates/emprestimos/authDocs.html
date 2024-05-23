@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Autenticação de documentos
+{% endblock title %}
+
+{% block content %}
+{% include 'menu.html' %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container">
+    <div class="row mb-3">
+        <h3 class="fw-bold">Autenticação de documentos</h3>
+    </div>
+    {% include 'actions/messages.html' %}
+    <div class="row">
+        <form action="{{url_for('authDocs')}}" method="post" class="form-group">
+            <div class="mb-3">
+                <label for="id_emprestimo" class="form-label">Código do emprestimo</label>
+                <input type="number" id="id_emprestimo" name="id_emprestimo" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="tipo_hash" class="form-label">Tipo do comprovante</label>
+                <select name="tipo_hash" id="tipo_hash"class="form-control">
+                    <option value="">Selecione o tipo</option>
+                    <option value="1">Emprestimo</option>
+                    <option value="0">Devolução</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="form-label">Código de autenticação</label>
+                <input type="text" id="hash_code" name="hash_code" class="form-control">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

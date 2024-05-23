@@ -680,6 +680,41 @@ def perfilUsuario():
     
     return render_template('usuario/perfilUsuario.html', context=context, breadcrumbs=breadcrumbs)
 
+@app.route('/authDocs', methods=['GET', 'POST'])
+@login_required
+def authDocs():
+    if request.method == 'POST':
+        id_emprestimo = request.form.get('id_emprestimo')
+        tipo_hash = request.form.get('tipo_hash') # Saber se é emprestimo ou devolução
+        hash_code = request.form.get('hash_code')
+        
+        emprestimo = Emprestimo.query.get_or_404(id_emprestimo)
+
+        if int(tipo_hash) == 1: #Se for 1 então é emprestimo
+            hash_emprestimo = hash_string(f'{emprestimo.id}{emprestimo.cliente}{emprestimo.livro}{emprestimo.data_emprestimo}')
+            
+            if hash_code == hash_emprestimo:
+                flash('Autenticado com sucesso!', 'success')
+                return redirect(url_for('authDocs'))
+            else:
+                flash('Autenticação inválida!', 'danger')
+                return redirect(url_for('authDocs'))
+        else:
+            hash_devolucao = hash_string(f'{emprestimo.id}{emprestimo.cliente}{emprestimo.livro}{emprestimo.data_devolucao}')
+            if hash_code == hash_devolucao:
+                flash('Autenticado com sucesso!', 'sucess')
+                return redirect(url_for('authDocs'))
+            else:
+                flash('Autenticação inválida!', 'danger')
+                return redirect(url_for('authDocs'))
+
+    breadcrumbs = generate_breadcrumbs([
+        {'title': 'Inicio', 'url': url_for('index')},
+        {'title': 'Autenticar documentos', 'url': url_for('authDocs')}
+    ])
+    
+    return render_template('emprestimos/authDocs.html', breadcrumbs=breadcrumbs)
+
 @app.errorhandler(500)
 def internal_server_error(error):
     # Manipulador de erro para o código de erro 500

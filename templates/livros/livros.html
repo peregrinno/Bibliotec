@@ -12,76 +12,70 @@ Livros
         <h3 class="fw-bold">Livros</h3>
     </div>
     {% include 'actions/messages.html' %}
-    <div class="d-flex mb-3">
-        <div class="p-2 flex-grow-1">
-            <form class="d-flex w-50" role="search" method="get" action="{{ url_for('livros') }}">
-                <input class="form-control me-2" type="search" name="search"
-                    placeholder="Procurar por título, autor ou ISBN..." aria-label="Search"
-                    value="{{ context.search_query }}">
-                <button class="btn btn-primary" type="submit">Procurar</button>
-            </form>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <form class="d-flex" role="search" method="get" action="{{ url_for('livros') }}">
+                    <input class="form-control me-2" type="search" name="search"
+                        placeholder="Procurar por título, autor ou ISBN..." aria-label="Search"
+                        value="{{ context.search_query }}">
+                    <button class="btn btn-primary" type="submit">Procurar</button>
+                </form>
+            </div>
+            
+            
         </div>
-        <div class="p-2">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoLivro">
-                <i class="bi bi-plus-circle-fill"></i>&nbsp;
-                Novo livro
-            </button>
-        </div>
-        <div class="p-2">
-            <button class="btn btn-primary">
-                Exportar
-            </button>
+        <div class="col offset-md-2">
+            <div class="mb-3">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoLivro">
+                    <i class="bi bi-plus-circle-fill"></i>&nbsp;
+                    Novo livro
+                </button>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th class="text-center" scope="col">ISBN</th>
-                    <th class="text-center" scope="col">Título</th>
-                    <th class="text-center" scope="col">Autor</th>
-                    <th class="text-center" scope="col">Gênero</th>
-                    <th class="text-center" scope="col">Qtd Disponível</th>
-                    <th class="text-center" scope="col">Qtd Total</th>
-                    <th class="text-center" scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if context.livros %}
-                {% for livro in context.livros %}
-                <tr>
-                    <th scope="row">{{ livro.id }}</th>
-                    <td class="text-center">{{ livro.isbn }}</td>
-                    <td class="text-center">{{ livro.titulo }}</td>
-                    <td class="text-center">{{ livro.autor }}</td>
-                    <td class="text-center">{{ livro.genero.nome }}</td>
-                    <td class="text-center">{{ livro.qtd_disponivel }}</td>
-                    <td class="text-center">{{ livro.qtd_total }}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalNovoLivro" data-id="{{ livro.id }}" data-isbn="{{ livro.isbn }}"
-                            data-titulo="{{ livro.titulo }}" data-autor="{{ livro.autor }}"
-                            data-genero_id="{{ livro.genero_id }}" data-qtd_disponivel="{{ livro.qtd_disponivel }}"
-                            data-qtd_total="{{ livro.qtd_total }}">
-                            <i class="bi bi-pencil-square"></i>
-                        </button>
-                        {% if request.cookies.get('valid') == 'True' %}
-                        <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalDeleteLivro" data-id="{{ livro.id }}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-                {% else %}
-                <tr>
-                    <td colspan="8" class="text-center">Sem livros cadastrados ainda...</td>
-                </tr>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% if context.livros %}
+        {% for livro in context.livros %}
+        <div class="card me-2" style="width: 400px;">
+            <div class="card-header">
+                {{ livro.id }} - {{ livro.titulo }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ livro.titulo }}</h5>
+                <p class="card-text">{{ livro.isbn }}</p>
+                <div class="row mb-3">
+                    <div class="col">
+                        <p class="card-text"><b>Autor: </b>{{ livro.autor }}</p>
+                        <p class="card-text"><b>Genêro: </b>{{ livro.genero.nome }}</p>
+                    </div>
+                    <div class="col">
+                        <p class="card-text"><b>Qtd. Disponivel: </b>{{ livro.qtd_disponivel }}</p>
+                        <p class="card-text"><b>Qtd. Total: </b>{{ livro.qtd_total }}</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
+                    data-bs-target="#ModalNovoLivro" data-id="{{ livro.id }}" data-isbn="{{ livro.isbn }}"
+                    data-titulo="{{ livro.titulo }}" data-autor="{{ livro.autor }}"
+                    data-genero_id="{{ livro.genero_id }}" data-qtd_disponivel="{{ livro.qtd_disponivel }}"
+                    data-qtd_total="{{ livro.qtd_total }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </button>
+                {% if request.cookies.get('valid') == 'True' %}
+                <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
+                    data-bs-target="#ModalDeleteLivro" data-id="{{ livro.id }}">
+                    <i class="bi bi-trash"></i> Apagar
+                </button>
+
                 {% endif %}
-            </tbody>
-        </table>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="8" class="text-center">Sem livros cadastrados ainda...</td>
+        </tr>
+        {% endif %}
     </div>
 </div>
 

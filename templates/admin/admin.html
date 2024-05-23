@@ -12,68 +12,74 @@ Administração
         <h3 class="fw-bold">Administração</h3>
     </div>
     {% include 'actions/messages.html' %}
-    <div class="d-flex mb-3">
-        <div class="p-2 flex-grow-1">
-            <form class="d-flex w-50" role="search" method="get" action="{{ url_for('administracao') }}">
-                <input class="form-control me-2" type="search" name="search" placeholder="Procurar por email" aria-label="Search" value="{{ context.search_query }}">
-                <button class="btn btn-primary" type="submit">Procurar</button>
-            </form>
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="p-2">
+                <form class="d-flex " role="search" method="get" action="{{ url_for('administracao') }}">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Procurar por email"
+                        aria-label="Search" value="{{ context.search_query }}">
+                    <button class="btn btn-primary" type="submit">Procurar</button>
+                </form>
+            </div>
         </div>
-        <div class="p-2">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoUsuario">
-                <i class="bi bi-plus-circle-fill"></i>&nbsp;
-                Novo usuário
-            </button>
-        </div>
-        <div class="p-2">
-            <a class="btn btn-primary" href="{{ url_for('resetSenhaAdmin') }}"><i class="bi bi-arrow-clockwise"></i> 
-                Reset de senha
-            </a>
+        <div class="col ">
+            <div class="p-2">
+                <a class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ModalNovoUsuario">
+                    <i class="bi bi-plus-circle-fill"></i>&nbsp;
+                    Novo usuário
+                </a>
+
+                <a class="btn btn-primary mb-3" href="{{ url_for('resetSenhaAdmin') }}"><i class="bi bi-arrow-clockwise"></i>
+                    Reset de senha
+                </a>
+            </div>
         </div>
     </div>
     <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th class="text-center" scope="col">E-mail</th>
-                    <th class="text-center" scope="col">Administrador</th>
-                    <th class="text-center" scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if context.usuarios %}
-                {% for u in context.usuarios %}
-                <tr>
-                    <th scope="row">{{ u.id }}</th>
-                    <td class="text-center">{{ u.email }}</td>
-                    <td class="text-center">
-                        {% if u.e_administrador == True %}
-                        <span class="badge text-bg-primary">Admin</span> 
-                        {% else %}
-                        <span class="badge text-bg-secondary">Cadastrador</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalNovoUsuario" data-id="{{ u.id }}"
-                            data-email="{{ u.email }}" data-acesso="{% if u.e_administrador == True %}1{% else %}0{% endif %}">
-                            <i class="bi bi-pencil-square"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalDeleteUsuario" data-id="{{ u.id }}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-                {% else %}
-                <tr>
-                    <td colspan="8" class="text-center">Sem usuários cadastrados ainda...</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th class="text-center" scope="col">E-mail</th>
+                        <th class="text-center" scope="col">Administrador</th>
+                        <th class="text-center" scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if context.usuarios %}
+                    {% for u in context.usuarios %}
+                    <tr>
+                        <th scope="row">{{ u.id }}</th>
+                        <td class="text-center">{{ u.email }}</td>
+                        <td class="text-center">
+                            {% if u.e_administrador == True %}
+                            <span class="badge text-bg-primary">Admin</span>
+                            {% else %}
+                            <span class="badge text-bg-secondary">Cadastrador</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
+                                data-bs-target="#ModalNovoUsuario" data-id="{{ u.id }}" data-email="{{ u.email }}"
+                                data-acesso="{% if u.e_administrador == True %}1{% else %}0{% endif %}">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
+                                data-bs-target="#ModalDeleteUsuario" data-id="{{ u.id }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">Sem usuários cadastrados ainda...</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -98,7 +104,7 @@ Administração
             if (usuarioId) {
                 modalTitle.textContent = 'Editar Usuario';
                 form.action = '{{ url_for("administracao") }}';
-                inputId.value =  usuarioId;
+                inputId.value = usuarioId;
                 inputEmail.value = email;
                 inputAcesso.value = nivel_acesso;
             } else {

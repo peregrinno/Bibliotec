@@ -7,12 +7,12 @@
 {% block content %}
 <main class="row" style="height: 100%;">
     <!-- Banner -->
-    <div class="col-md-7" style="background-image: url({{ url_for('static', filename='imgs/banner_login.svg')}}); min-height: 98vh; padding: 0px !important;">
+    <div class="col-md-7 d-none d-md-block" style="background-image: url({{ url_for('static', filename='imgs/banner_login.svg')}}); min-height: 98vh; padding: 0px !important;">
         
     </div>
     <!-- Area de login -->
-    <div class="col-md-5" style="background-color: #009473; padding: 0px !important;">
-        <div class="container rounded shadow bg-white" style="margin-top: 9rem; margin-left: 13rem; min-height: 550px; width: 400px;">
+    <div class="col-md-5 col-md-offset-7 col-12" style="background-color: #009473; padding: 0px !important;">
+        <div class="container rounded shadow bg-white" style="margin-top: 9rem; margin-left: auto; margin-right: auto; min-height: 550px; width: 400px;">
             <img class="mx-auto d-block" src="{{ url_for('static', filename='imgs/logo_bibliotec.svg')}}" alt="" width="200">
             <hr style="color: #009473;">
             
@@ -48,5 +48,4 @@
         </div>
     </div>
 </main>
-    
 {% endblock %}

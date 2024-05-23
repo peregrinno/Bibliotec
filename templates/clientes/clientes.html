@@ -13,68 +13,55 @@ Clientes
     </div>
     {% include 'actions/messages.html' %}
     <div class="d-flex mb-3">
-        <div class="p-2 flex-grow-1">
+        <div class="col-md-8">
             <form class="d-flex w-50" role="search" method="get" action="{{ url_for('clientes') }}">
-                <input class="form-control me-2" type="search" name="search" placeholder="Procurar por e-mail ou telefone..." aria-label="Search" value="{{ context.search_query }}">
+                <input class="form-control me-2" type="search" name="search"
+                    placeholder="Procurar por e-mail ou telefone..." aria-label="Search"
+                    value="{{ context.search_query }}">
                 <button class="btn btn-primary" type="submit">Procurar</button>
             </form>
+
         </div>
-        <div class="p-2">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoCliente">
-                <i class="bi bi-plus-circle-fill"></i>&nbsp;
-                Novo cliente
-            </button>
+        <div class="col offset-md-2">
+            <div class="p-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoCliente">
+                    <i class="bi bi-plus-circle-fill"></i>&nbsp;
+                    Novo cliente
+                </button>
+            </div>
         </div>
-        <!-- 
-        <div class="p-2">
-            <button class="btn btn-primary">
-                Exportar
-            </button>
-        </div>
-        -->
+
     </div>
     <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th class="text-center" scope="col">E-mail</th>
-                    <th class="text-center" scope="col">Endereço</th>
-                    <th class="text-center" scope="col">Telefone</th>
-                    <th class="text-center" scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if context.clientes %}
-                {% for cliente in context.clientes %}
-                <tr>
-                    <th scope="row">{{ cliente.id }}</th>
-                    <td class="text-center">{{ cliente.email }}</td>
-                    <td class="text-center">{{ cliente.endereco }}</td>
-                    <td class="text-center">{{ cliente.telefone }}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalNovoCliente" data-id="{{ cliente.id }}"
-                            data-email="{{ cliente.email }}" data-endereco="{{ cliente.endereco }}"
-                            data-telefone="{{ cliente.telefone }}">
-                            <i class="bi bi-pencil-square"></i>
-                        </button>
-                        {% if request.cookies.get('valid') == 'True' %}
-                        <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
-                            data-bs-target="#ModalDeleteCliente" data-id="{{ cliente.id }}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-                {% else %}
-                <tr>
-                    <td colspan="5" class="text-center">Sem clientes cadastrados ainda...</td>
-                </tr>
+        {% if context.clientes %}
+        {% for cliente in context.clientes %}
+        <div class="card m-1">
+            <div class="card-header">
+                {{ cliente.id }} - {{ cliente.email }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cliente.email }}</h5>
+                <p class="card-text">{{ cliente.telefone }}</p>
+                <p class="card-text">{{ cliente.endereco }}</p>
+                <button type="button" class="btn btn-primary p-2 m-1" data-bs-toggle="modal"
+                    data-bs-target="#ModalNovoCliente" data-id="{{ cliente.id }}" data-email="{{ cliente.email }}"
+                    data-endereco="{{ cliente.endereco }}" data-telefone="{{ cliente.telefone }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </button>
+                {% if request.cookies.get('valid') == 'True' %}
+                <button type="button" class="btn btn-danger p-2 m-1" data-bs-toggle="modal"
+                    data-bs-target="#ModalDeleteCliente" data-id="{{ cliente.id }}">
+                    <i class="bi bi-trash"></i> Apagar
+                </button>
                 {% endif %}
-            </tbody>
-        </table>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center">Sem clientes cadastrados ainda...</td>
+        </tr>
+        {% endif %}
     </div>
 </div>
 
