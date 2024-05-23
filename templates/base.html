@@ -4,11 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Bibliotec" />
-    <meta property="og:description" content="Sistema de biblioteca pública">
-    <meta property="og:url" content="https://bibliotec-production.up.railway.app" />
-    <meta property="og:image" content="{{ url_for('static', filename='imgs/bibliotec_meta.svg')}}" />
+
+    <meta name="description" content="Bibliotec - Sistema de gerenciamento de biblioteca online. Acesse e gerencie seus livros, empréstimos e mais.">
+    <meta name="keywords" content="biblioteca, gerenciamento de biblioteca, livros, empréstimos, sistema online">
+    <meta name="author" content="Luan Araujo">
+
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bibliotec-production.up.railway.app" />
+    <meta property="og:title" content="Bibliotec" />
+    <meta property="og:description" content="Sistema de gerenciamento de biblioteca online">
+    <meta property="og:image" content="https://bibliotec-production.up.railway.app{{ url_for('static', filename='imgs/bibliotec_meta.svg')}}" />
+    
     
     <title>Bibliotec :: {% block title %}Bibliotec{% endblock title %}</title>
 
