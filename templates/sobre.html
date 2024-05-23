@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Sobre o sistema
+{% endblock title %}
+
+{% block content %}
+<div class="row"
+  style="background-image: url({{ url_for('static', filename='imgs/banner_login.svg')}}); background-repeat: no-repeat; min-height: 98vh;">
+  <div class="row mt-2 mb-3">
+    <div class="col-md-6" style="width: 40%;"></div>
+    <div class="col-md-6 m-3">
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-primary" id="backButton">Voltar</button>
+      </div>
+      <div class="mt-4 mb-3 p-3 bg-white rounded-3 shadow" data-aos="fade-down">
+        <h1 class="fw-bold" style="color: #0c6854;">Bibliotec</h1>
+        <h3 style="color: #0c6854;">Sistema de gestão de biblioteca pública</h3>
+      </div>
+      <div class="row mx-auto gap-2">
+        <div class="col-md-6 p-3 bg-white rounded-3 shadow" data-aos="fade-right">
+          <h5 data-aos="fade-right">Desenvolvedores</h5>
+          <hr>
+          <div class="card mb-3" style="max-width: 540px; min-height: 170px" data-aos="fade-right">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{ url_for('static', filename='imgs/devs/luan.svg') }}" class="img-fluid rounded-start"
+                  alt="..." style="min-height: 178px;">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">Luan Araújo</h5>
+                  <p class="card-text">
+                    <a href="https://github.com/peregrinno"
+                      class="link-offset-2 link-underline link-underline-opacity-0" target="_blank"><i
+                        class="bi bi-github"></i> Github</a>
+                  </p>
+                  <p class="card-text">
+                    <a href="https://www.linkedin.com/in/luanaraujodev/"
+                      class="link-offset-2 link-underline link-underline-opacity-0" target="_blank"><i
+                        class="bi bi-linkedin"></i> LinkedIn</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3" style="max-width: 540px; min-height: 170px" data-aos="fade-right">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{ url_for('static', filename='imgs/devs/erick.jpeg') }}" class="img-fluid rounded-start"
+                  alt="..." style="min-height: 178px;">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">Erick Santos</h5>
+                  <p class="card-text">
+                    <a href="https://github.com/deverick091"
+                      class="link-offset-2 link-underline link-underline-opacity-0" target="_blank"><i
+                        class="bi bi-github"></i> Github</a>
+                  </p>
+                  <p class="card-text">
+                    <a href="https://www.linkedin.com/in/erick-santos-317878180/"
+                      class="link-offset-2 link-underline link-underline-opacity-0" target="_blank"><i
+                        class="bi bi-linkedin"></i> LinkedIn</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3" style="max-width: 540px; min-height: 170px" data-aos="fade-right">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{ url_for('static', filename='imgs/devs/rogerio.jpeg') }}" class="img-fluid rounded-start"
+                  alt="..." style="min-height: 178px;">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">Rogério Junior</h5>
+                  <p class="card-text">
+                    <a href="https://github.com/RogerioJunior29"
+                      class="link-offset-2 link-underline link-underline-opacity-0" target="_blank"><i
+                        class="bi bi-github"></i> Github</a>
+                  </p>
+                  <p class="card-text">
+                    <a href="#" class="link-offset-2 link-underline link-underline-opacity-0" target="_blank"><i
+                        class="bi bi-linkedin"></i> LinkedIn</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="col p-3 bg-white rounded-3 shadow" data-aos="fade-left">
+          <h5>Finalidade</h5>
+          <hr>
+          <center>
+            <img src="{{ url_for('static', filename='imgs/logo_faculdade.png') }}" alt="" srcset="">
+          </center>
+          <p>Projeto desenvolvido para a disciplina de Projeto Integrador III no curso de Análise e Desenvolvimento de
+            Sistemas da Faculdade Única, na qual foi proposto o desenvolvimento de um sistema a escolha dos alunos que
+            sintetizasse o conteudo do curso.</p>
+          <h5>Stack</h5>
+          <hr>
+          <div class="d-flex flex-wrap mb-2">
+            <img src="{{ url_for('static', filename='imgs/stack/python.svg') }}" class="p-2" alt="" srcset="" width="60"
+              height="60">
+            <img src="{{ url_for('static', filename='imgs/stack/html-5.svg') }}" class="p-2" alt="" srcset="" width="60"
+              height="60">
+            <img src="{{ url_for('static', filename='imgs/stack/css-3.svg') }}" class="p-2" alt="" srcset="" width="60"
+              height="60">
+            <img src="{{ url_for('static', filename='imgs/stack/javascript-js.svg') }}" class="p-2" alt="" srcset=""
+              width="60" height="60">
+            <img src="{{ url_for('static', filename='imgs/stack/postgresql-plain-wordmark.svg') }}" class="p-2" alt=""
+              srcset="" width="60" height="60">
+            <img src="{{ url_for('static', filename='imgs/stack/jquery-original-wordmark.svg') }}" class="p-2" alt=""
+              srcset="" width="60" height="60">
+            <img src="{{ url_for('static', filename='imgs/stack/docker.svg') }}" class="p-2" alt="" srcset="" width="60"
+              height="60">
+          </div>
+          <p>Projeto foi desenvolvido com diversas tecnologias, sendo entre elas: Python, HTML, CSS, Javascript, JQuery,
+            PostgreSQL, Docker. Atualmente hospedado na plataforma Railway.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('backButton').addEventListener('click', function () {
+    window.history.back();
+  });
+</script>
+{% endblock content %}

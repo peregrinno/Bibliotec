@@ -12,18 +12,19 @@ Clientes
         <h3 class="fw-bold">Clientes</h3>
     </div>
     {% include 'actions/messages.html' %}
-    <div class="d-flex mb-3">
-        <div class="col-md-8">
-            <form class="d-flex w-50" role="search" method="get" action="{{ url_for('clientes') }}">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="mb-3">
+            <form class="d-flex" role="search" method="get" action="{{ url_for('clientes') }}">
                 <input class="form-control me-2" type="search" name="search"
                     placeholder="Procurar por e-mail ou telefone..." aria-label="Search"
                     value="{{ context.search_query }}">
                 <button class="btn btn-primary" type="submit">Procurar</button>
             </form>
-
+            </div>
         </div>
         <div class="col offset-md-2">
-            <div class="p-2">
+            <div class="mb-3">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalNovoCliente">
                     <i class="bi bi-plus-circle-fill"></i>&nbsp;
                     Novo cliente

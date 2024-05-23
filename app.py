@@ -733,6 +733,10 @@ def not_found_error(error):
     flash('Acesso negado.', 'danger')
     return redirect(url_for('index'))
 
+@app.route('/sobre')
+def sobre():
+    return render_template('sobre.html')
+
 def gerar_testes():
     with app.app_context():
         geners = generate_genres()
