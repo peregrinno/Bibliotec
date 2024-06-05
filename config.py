@@ -1,8 +1,9 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.environ.get('POSTGRES_URL', 'postgresql+psycopg2://bibliotec:bibliotec@localhost/bibliotec_db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('POSTGRES_URL', 'sqlite:///development.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    ENV = os.environ.get('FLASK_ENV', 'development')
     
 """
 Criar o usuario

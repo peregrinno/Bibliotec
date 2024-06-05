@@ -23,17 +23,45 @@ def generate_books(num_books=50):
     return books
 
 
-def generate_email(existing_emails, domain="example.com"):
+def generate_email(existing_emails):
     while True:
-        email = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10)) + "@" + domain
+        domains=["gmail.com", "yahoo.com", "hotmail.com"]
+        
+        nomes = [
+        "antonio", "beatriz", "carla", "diego", "eduarda", 
+        "fernando", "gabriela", "henrique", "isabela", "joao", 
+        "karina", "leonardo", "mariana", "nicolas", "olivia", 
+        "paulo", "quiteria", "rafael", "sabrina", "tiago"
+        ]
+
+        sobrenomes = [
+            "almeida", "barbosa", "costa", "dias", "esteves", 
+            "ferreira", "gomes", "henriques", "isidoro", "junior", 
+            "keller", "lima", "martins", "neves", "oliveira", 
+            "pereira", "quintela", "ribeiro", "santos", "teixeira"
+        ]
+        
+        conectores = [ '.', '_']
+        
+        email = f"{random.choice(nomes)}{random.choice(conectores)}{random.choice(sobrenomes)}{random.randint(0, 9)}@{random.choice(domains)}"
         if email not in existing_emails:
             existing_emails.add(email)
             return email
 
 def generate_address():
-    streets = ["Rua A", "Rua B", "Rua C", "Avenida X", "Avenida Y"]
-    cities = ["Cidade 1", "Cidade 2", "Cidade 3"]
-    states = ["Estado A", "Estado B", "Estado C"]
+    streets = [
+    "rua das flores", "avenida central", "travessa do sol", "praca da liberdade",
+    "rua nova", "rua da paz", "avenida dos estados", "rua dos pinheiros", 
+    "travessa da alegria", "praca do comercio", "rua dos andradas", 
+    "avenida paulista", "rua santa maria", "rua das acacias", "rua do porto", 
+    "rua sao joao", "avenida brasil", "rua do mercado", "praca da matriz", 
+    "rua dos girassois", "rua das hortensias", "rua do sol nascente", 
+    "rua das laranjeiras", "avenida independencia", "rua do rosario", 
+    "travessa das violetas", "rua das camelias", "rua da serra", 
+    "praca do estudante", "rua dos cravos"
+    ]
+    cities = ["Caruaru", "Barcarena", "São Paulo"]
+    states = ["Pernambuco", "Pará", "São Paulo"]
     street = random.choice(streets)
     number = random.randint(1, 1000)
     city = random.choice(cities)

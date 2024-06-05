@@ -1,0 +1,50 @@
+ Instruções para Testar o Sistema em Modo de Desenvolvimento
+
+## Passo 1: Instalação do Python
+1. Acesse o site oficial do Python: https://www.python.org/
+2. Baixe a versão mais recente do Python.
+3. Siga as instruções de instalação. Certifique-se de marcar a opção "Add Python to PATH" durante a instalação.
+
+(Caso o python já esteja instalado na máquina) Obs: Versão do python minima: 3.10 
+
+## Passo 2: Configuração do Ambiente Virtual
+1. Abra o terminal ou prompt de comando.
+2. Navegue até o diretório onde o arquivo `app.py` está localizado.
+3. Crie um ambiente virtual com o seguinte comando:
+	python -m venv venv
+4. Abra o terminal e ative o ambiente virtual com um dos comandos:
+- No Windows:
+  ```
+  venv\Scripts\activate
+  ```
+- No macOS/Linux:
+  ```
+  source venv/bin/activate
+  ```
+
+## Passo 3: Instalação das Dependências
+1. Com o ambiente virtual ativado, instale as dependências necessárias com o seguinte comando:
+    pip install -r requirements.txt
+
+*Nota: Certifique-se de ter um arquivo `requirements.txt` com todas as dependências listadas.*
+
+## Passo 4: Execução do Sistema em Modo de Desenvolvimento
+1. Ainda com o ambiente virtual ativado, execute o seguinte comando para iniciar o sistema:
+    python app.py
+
+## Passo 5: Acesso ao Sistema
+1. Abra o seu navegador da web.
+2. Digite o seguinte endereço na barra de endereços:
+    http://localhost:8083
+
+3. Pressione Enter e o sistema estará acessível na porta 8083.
+4. Credenciais de acesso:
+    Email - admin@example.com Senha - admin123
+
+## Dicas Adicionais
+- Para sair do ambiente virtual, use o comando:
+    deactivate
+
+- Certifique-se de que não há outros serviços utilizando a porta 8083 para evitar conflitos.
+- Verifique se todas as dependências estão corretas no arquivo `requirements.txt` para evitar problemas de instalação.
+
